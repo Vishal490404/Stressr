@@ -15,12 +15,12 @@ async def handle_runtimes():
 async def handle_code_execution():
     data = await request.get_json()  
     code = data.get("code")
-    print(data)
+    # print(data)
     if not code:
         return jsonify({"error": "No code provided"}), 400
     
     client = Request.PistonClient()
-    language = "cpp" 
+    language = "python" 
     file_to_execute = Request.File(content=code, filename="hello.py")
     files = [file_to_execute]
     output = await client.execute(

@@ -4,7 +4,7 @@ import Editor from "@monaco-editor/react";
 
 function App() {
   const [response, setResponse] = useState(null);
-  const [code, setCode] = useState(``);
+  const [code, setCode] = useState(`for i in range(1,10):\n    print(i)`);
 
   const sendCodeToBackend = async () => {
     const data = {
@@ -29,17 +29,18 @@ function App() {
       <h1>Monaco Editor - Send Code to Backend</h1>
       <Editor
         height="50vh"
-        defaultLanguage="cpp"
+        defaultLanguage="python"
         value={code}
         onChange={(newValue) => setCode(newValue)}
       />
       <button onClick={sendCodeToBackend} className="bg-slate-400">
         Send Code to Backend
       </button>
-
+      
       {response && response.response.run && (
         <div>
           <h2>Response from Backend:</h2>
+          {console.log(response)}
           <pre>{response.response.run.stdout || response.response.run.stderr}</pre>
         </div>
       )}

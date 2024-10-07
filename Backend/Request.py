@@ -74,7 +74,6 @@ class PistonClient:
             "post", "execute/", data=json.dumps(payload)
         )
         # print(output)
-        # return Output(output)
         return output
     async def get_runtimes(self, language: str) -> List[Runtime]:
         runtimes = self._runtimes or await self.runtimes()
