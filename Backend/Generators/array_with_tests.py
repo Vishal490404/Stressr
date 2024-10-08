@@ -16,8 +16,7 @@ class ArrayGenerator:
         return [self.V.next() for _ in range(self.N)]
 
 minT = 1
-minN, maxN = map(int, input().split())
-minArrayElement, maxArrayElement = map(int, input().split())
+minN, maxN, minArrayElement, maxArrayElement= map(int, input().split())
 
 V = ChoiceConstraint(range(minArrayElement, maxArrayElement + 1))
 

@@ -2,8 +2,8 @@ import random
 
 
 minT = 1
-minN, maxN = map(int,input().split())
-minM, maxM = map(int,input().split())
+minN, maxN, minM, maxM = map(int,input().split())
+
 T = minT
 
 # gen output

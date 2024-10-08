@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import axios from "axios";
-import Editor from "@monaco-editor/react";
+import MainEditor from "./Components/MainEditor";
+import { SelectorMenu } from "./Components/TestGeneratorSelector";
 
 function App() {
   const [response, setResponse] = useState(null);
   const [code, setCode] = useState(`for i in range(1,10):\n    print(i)`);
+  const [language, setLanguage] = useState("python");
 
   const sendCodeToBackend = async () => {
     const data = {
-      code: code
+      language: language,
+      code: code,
     };
 
     try {
@@ -18,7 +21,7 @@ function App() {
         },
       });
 
-      setResponse(res.data);  
+      setResponse(res.data);
     } catch (error) {
       console.error("Error sending data", error);
     }
@@ -27,23 +30,20 @@ function App() {
   return (
     <div>
       <h1>Monaco Editor - Send Code to Backend</h1>
-      <Editor
-        height="50vh"
-        defaultLanguage="python"
-        value={code}
-        onChange={(newValue) => setCode(newValue)}
-      />
+      <MainEditor code={code} setCode={setCode} language={language} setLanguage={setLanguage} />
+
       <button onClick={sendCodeToBackend} className="bg-slate-400">
         Send Code to Backend
       </button>
-      
-      {response && response.response.run && (
+
+      {response && response.response?.run && (
         <div>
-          <h2>Response from Backend:</h2>
           {console.log(response)}
+          <h2>Response from Backend:</h2>
           <pre>{response.response.run.stdout || response.response.run.stderr}</pre>
         </div>
       )}
+      <SelectorMenu />
     </div>
   );
 }

@@ -5,3 +5,4 @@ Test-Case Generator Selector
     - All fields are required
     - Light Mode Dark Mode
     - No leading zeros allowed
+    - Add language to post request

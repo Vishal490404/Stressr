@@ -15,8 +15,7 @@ class ArrayGenerator:
     def standard(self):
         return [self.V.next() for _ in range(self.N)]
 
-minN, maxN = map(int, input().split())
-minArrayElement, maxArrayElement = map(int, input().split())
+minN, maxN, minArrayElement, maxArrayElement= map(int, input().split())
 
 N = random.randint(1, min(maxN, 20)) 
 V = ChoiceConstraint(range(minArrayElement, maxArrayElement + 1))
