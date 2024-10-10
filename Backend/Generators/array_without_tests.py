@@ -1,27 +1,12 @@
 import random
 
-class ChoiceConstraint:
-    def __init__(self, choices):
-        self.choices = list(choices)
+def generate_array(N, min_array_element, max_array_element):
+    return [random.randint(min_array_element, max_array_element) for _ in range(N)]
 
-    def next(self):
-        return random.choice(self.choices)
+minN, maxN, minArrayElement, maxArrayElement = map(int, input().split())
 
-class ArrayGenerator:
-    def __init__(self, N, V):
-        self.N = N
-        self.V = V
-
-    def standard(self):
-        return [self.V.next() for _ in range(self.N)]
-
-minN, maxN, minArrayElement, maxArrayElement= map(int, input().split())
-
-N = random.randint(1, min(maxN, 20)) 
-V = ChoiceConstraint(range(minArrayElement, maxArrayElement + 1))
-
-gen_array = ArrayGenerator(N, V)
-result = gen_array.standard()
+N = random.randint(1, min(maxN, 20))
+result = generate_array(N, minArrayElement, maxArrayElement)
 
 print(N)
 print(*result)
