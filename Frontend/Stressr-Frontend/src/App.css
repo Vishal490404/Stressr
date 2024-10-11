@@ -1,0 +1,27 @@
+@keyframes glow {
+    0% {
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    100% {
+        box-shadow: 0 0 30px rgba(255, 255, 255, 1);
+    }
+}
+
+@keyframes borderMove {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+button span span {
+    animation: glow 1.5s infinite alternate;
+}
+
+button span {
+    animation: borderMove 2s linear infinite;
+}
