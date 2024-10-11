@@ -15,6 +15,6 @@ export default AnimatedButton;
 
 
 AnimatedButton.propTypes = {
-    onClick: PropTypes.node
+    onClick: PropTypes.func.isRequired
 }
 

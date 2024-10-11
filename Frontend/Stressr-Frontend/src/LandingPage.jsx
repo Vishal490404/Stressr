@@ -12,7 +12,7 @@ export default function LandingPage() {
         const timer = setTimeout(() => {
             console.log("Hello")
             setLoading(false);
-        }, 2000);
+        }, 1500);
 
         return () => clearTimeout(timer);
     }, []);

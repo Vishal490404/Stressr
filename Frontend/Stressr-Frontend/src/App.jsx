@@ -2,13 +2,14 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Particle from "./Components/Particle";
 import LoginPage from "./LoginPage";
 import LandingPage from "./LandingPage";
+import { AuthProvider } from "./AuthContext";
 // import MainEditor from "./Components/MainEditor";
 // import SelectorMenu from "./Components/TestGeneratorSelector";
 
 function App() {
   return (
-    <div>
-      <Particle /> 
+    <AuthProvider>
+      <Particle />
       <Router>
         <Routes>
           <Route path="/" element={<LandingPage />} />
@@ -17,7 +18,7 @@ function App() {
           {/* <Route path="/test-generator" element={<SelectorMenu />} /> */}
         </Routes>
       </Router>
-    </div>
+    </AuthProvider>
   );
 }
 
