@@ -42,6 +42,40 @@
     filter: blur(4rem);
 }
 
+.card:hover span {
+    background: #000;
+    color: #000;
+    position: relative;
+}
+
+.card:hover span::after {
+    content: "→"; 
+    position: absolute;
+    right: -20px; 
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px; 
+    transition: right 0.3s ease; 
+}
+
+.card span::after {
+    content: "→"; 
+    color: white;
+    position: absolute;
+    right: -40px; 
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    opacity: 0; 
+    transition: right 0.3s ease, opacity 0.3s ease;
+}
+
+.card:hover span::after {
+    opacity: 1;
+    right: -20px; 
+}
+
+
 @keyframes rotation {
     0% {
         --gradient-angle: 0deg;

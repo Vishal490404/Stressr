@@ -4,6 +4,8 @@ import LoginPage from "./LoginPage";
 import LandingPage from "./LandingPage";
 import { AuthProvider } from "./AuthContext";
 // import MainEditor from "./Components/MainEditor";
+// import { SelectorMenu } from "./Components/TestGeneratorSelector";
+// import MainEditor from "./Components/MainEditor";
 // import SelectorMenu from "./Components/TestGeneratorSelector";
 
 function App() {
@@ -14,8 +16,8 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
-          {/* <Route path="/editor" element={<MainEditor />} /> */}
-          {/* <Route path="/test-generator" element={<SelectorMenu />} /> */}
+          {/* <Route path="/editor" element={<MainEditor />} />
+          <Route path="/test-generator" element={<SelectorMenu />} /> */}
         </Routes>
       </Router>
     </AuthProvider>

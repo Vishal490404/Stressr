@@ -1,20 +1,18 @@
 import './AnimatedButton.css';
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
 
 const AnimatedButton = ({ onClick }) => {
     return (
-        <button className='card' onClick={onClick}>
-            <div className="text-white text-lg">
+        <button className="card" onClick={onClick}>
+            <span className="text-white text-lg">
                 Get Started!
-            </div>
+            </span>
         </button>
     );
-}
-
-export default AnimatedButton;
-
+};
 
 AnimatedButton.propTypes = {
-    onClick: PropTypes.func.isRequired
-}
+    onClick: PropTypes.func.isRequired,
+};
 
+export default AnimatedButton;
