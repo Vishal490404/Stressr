@@ -1,4 +1,5 @@
 import { useContext, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import HashLoader from 'react-spinners/HashLoader';
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
@@ -8,6 +9,7 @@ const LoginPage = () => {
     const { isLoggedIn, login, logout } = useContext(AuthContext);
     const [loading, setLoading] = useState(true);
     const [userName, setUserName] = useState('');
+    const navigate = useNavigate(); 
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -45,6 +47,10 @@ const LoginPage = () => {
         }, 1500);
     };
 
+    const goToAbout = () => {
+        navigate('/about'); 
+    };
+
     return (
         <div className={`w-screen h-screen grid grid-cols-2 transition-opacity duration-300`} style={{ position: "absolute", zIndex: 1 }}>
             {loading ? (
@@ -53,12 +59,15 @@ const LoginPage = () => {
                 </div>
             ) : isLoggedIn ? (
                 <>
-                    <div className="flex flex-col justify-center items-center pr-20 hover:backdrop-blur-sm transition duration-300 z-10 relative group cursor-pointer">
+                    <button 
+                        onClick={goToAbout} 
+                        className="flex flex-col justify-center items-center pr-20 hover:backdrop-blur-sm transition duration-300 z-10 relative group cursor-pointer"
+                    >
                         <h1 className="text-5xl font-bold text-white mb-32 text-center">User Guide</h1>
                         <div className="absolute transform transition-opacity duration-300 opacity-0 group-hover:opacity-100">
                             <span className="block w-6 h-6 border-b-2 border-l-2 border-white transform rotate-45"></span>
                         </div>
-                    </div>
+                    </button>
 
                     <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col h-48 w-auto bg-white bg-opacity-20 backdrop-blur-sm rounded-3xl shadow-lg border border-white p-6 z-20">
                         <h1 className="text-3xl font-semibold text-white mb-4 text-center">Welcome!</h1>
@@ -76,12 +85,15 @@ const LoginPage = () => {
                 </>
             ) : (
                 <>
-                    <div className="flex flex-col justify-center items-center pr-20 hover:backdrop-blur-sm transition duration-300 z-10 relative group cursor-pointer">
+                    <button 
+                        onClick={goToAbout} 
+                        className="flex flex-col justify-center items-center pr-20 hover:backdrop-blur-sm transition duration-300 z-10 relative group cursor-pointer"
+                    >
                         <h1 className="text-5xl font-bold text-white mb-32 text-center">User Guide</h1>
                         <div className="absolute transform transition-opacity duration-300 opacity-0 group-hover:opacity-100">
                             <span className="block w-6 h-6 border-b-2 border-l-2 border-white transform rotate-45"></span>
                         </div>
-                    </div>
+                    </button>
 
                     <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col h-48 w-96 bg-white bg-opacity-20 backdrop-blur-sm rounded-3xl shadow-lg border border-white p-6 z-20">
                         <h1 className="text-3xl font-semibold text-white mb-14 text-center">Hop into Stressr!</h1>
@@ -91,8 +103,6 @@ const LoginPage = () => {
                             onError={handleLoginError}
                             shape="circle"
                             logo_alignment="center"
-                            useOneTap="true"
-                            cancel_on_tap_outside="true"
                         />
                     </div>
                     <div className="flex flex-col justify-center items-center pl-20 hover:backdrop-blur-sm transition duration-300 z-10 relative group cursor-pointer">

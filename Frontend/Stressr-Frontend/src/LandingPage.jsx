@@ -10,7 +10,6 @@ export default function LandingPage() {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            console.log("Hello")
             setLoading(false);
         }, 1500);
 
@@ -35,10 +34,21 @@ export default function LandingPage() {
                             <div className="text-9xl mb-10">
                                 <Typewriter
                                     options={{
-                                        strings: ['Stressr'],
+                                        strings: [
+                                            `<span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500">Stressr</span>`,
+                                            `<span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-teal-500 to-green-500">Stressr</span>`,
+                                            `<span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-yellow-500 to-amber-500">Stressr</span>`,
+                                            `<span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">Stressr</span>`,
+                                            `<span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-500 to-violet-500">Stressr</span>`,
+                                            `<span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-green-400 to-lime-500">Stressr</span>`,
+                                            `<span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-yellow-500">Stressr</span>`,
+                                            `<span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-cyan-500 to-blue-500">Stressr</span>`
+                                        ],
                                         autoStart: true,
                                         loop: true,
                                         cursor: '_',
+                                        delay: 75,
+                                        deleteSpeed: 50,
                                     }}
                                 />
                                 <div className='text-lg font-normal m-5 text-gray-300'>

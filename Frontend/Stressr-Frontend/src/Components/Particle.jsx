@@ -11,10 +11,10 @@ const Particle = () => {
     },
     interactivity: {
       events: {
-        onClick: {
-          enable: true,
-          mode: "push",
-        },
+        // onClick: {
+        //   enable: true,
+        //   mode: "push",
+        // },
         onHover: {
           enable: true,
           mode: "repulse",
