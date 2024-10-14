@@ -110,7 +110,6 @@ const AboutPage = () => {
     const config = {
         animate: true,
         arrowIcon: "V",
-        openOnload: 0,
         expandIcon: "+",
         collapseIcon: "-",
     };
@@ -144,7 +143,7 @@ const AboutPage = () => {
 
         const timer = setTimeout(() => {
             setLoading(false);
-        }, 1500);
+        }, 3000);
 
         return () => clearTimeout(timer);
     }, []);

@@ -1,20 +1,22 @@
 import { useContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 import HashLoader from 'react-spinners/HashLoader';
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
-import { AuthContext } from './AuthContext'; 
+import { AuthContext } from './AuthContext';
+import { toast } from 'react-hot-toast';
 
 const LoginPage = () => {
     const { isLoggedIn, login, logout } = useContext(AuthContext);
     const [loading, setLoading] = useState(true);
     const [userName, setUserName] = useState('');
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
 
     useEffect(() => {
         const timer = setTimeout(() => {
             setLoading(false);
         }, 1500);
+
         const storedUserName = localStorage.getItem('userName');
         if (storedUserName) {
             setUserName(storedUserName);
@@ -25,30 +27,65 @@ const LoginPage = () => {
 
     const handleLoginSuccess = (credentialResponse) => {
         const decodedResponse = jwtDecode(credentialResponse.credential);
-        const name = decodedResponse.name || "User"; 
+        const name = decodedResponse.name || "User";
         setUserName(name);
         localStorage.setItem('userName', name);
 
-        console.log(decodedResponse);
         login(credentialResponse.credential);
+        toast.success(`Welcome, ${name}!`, {
+            style: {
+                background: 'white',
+                color: 'black',
+            },
+            duration: 2000, 
+        });
     };
 
     const handleLoginError = () => {
         console.log('Login Failed');
+        toast.error('Login Failed. Please try again.', {
+            style: {
+                background: 'white',
+                color: 'black',
+            },
+            duration: 2000, 
+        });
     };
 
     const handleLogout = () => {
-        setLoading(true); 
+        setLoading(true);
         logout();
         localStorage.removeItem('userName');
         setUserName('');
+        toast.success('You have successfully logged out.', {
+            style: {
+                background: 'white',
+                color: 'black',
+            },
+            duration: 2000, 
+        });
+
         setTimeout(() => {
-            setLoading(false); 
-        }, 1500);
+            setLoading(false);
+        }, 2000);
     };
 
     const goToAbout = () => {
-        navigate('/about'); 
+        navigate('/about');
+    };
+
+    const goToDashboard = () => {
+        if (isLoggedIn) {
+            navigate('/dashboard');
+        } else {
+            toast.error('Please login to access the Dashboard', {
+                style: {
+                    background: 'white',
+                    color: 'black',
+                },
+                duration: 2000, 
+            });
+        }
     };
 
     return (
@@ -59,8 +96,8 @@ const LoginPage = () => {
                 </div>
             ) : isLoggedIn ? (
                 <>
-                    <button 
-                        onClick={goToAbout} 
+                    <button
+                        onClick={goToAbout}
                         className="flex flex-col justify-center items-center pr-20 hover:backdrop-blur-sm transition duration-300 z-10 relative group cursor-pointer"
                     >
                         <h1 className="text-5xl font-bold text-white mb-32 text-center">User Guide</h1>
@@ -76,17 +113,21 @@ const LoginPage = () => {
                             Logout
                         </button>
                     </div>
-                    <div className="flex flex-col justify-center items-center pl-20 hover:backdrop-blur-sm transition duration-300 z-10 relative group cursor-pointer">
+
+                    <button
+                        onClick={goToDashboard}
+                        className="flex flex-col justify-center items-center pl-20 hover:backdrop-blur-sm transition duration-300 z-10 relative group cursor-pointer"
+                    >
                         <h1 className="text-5xl font-bold text-white mb-32 text-center">Dashboard</h1>
                         <div className="absolute transform transition-opacity duration-300 opacity-0 group-hover:opacity-100">
                             <span className="block w-6 h-6 border-t-2 border-r-2 border-white transform rotate-45"></span>
                         </div>
-                    </div>
+                    </button>
                 </>
             ) : (
                 <>
-                    <button 
-                        onClick={goToAbout} 
+                    <button
+                        onClick={goToAbout}
                         className="flex flex-col justify-center items-center pr-20 hover:backdrop-blur-sm transition duration-300 z-10 relative group cursor-pointer"
                     >
                         <h1 className="text-5xl font-bold text-white mb-32 text-center">User Guide</h1>
@@ -103,14 +144,22 @@ const LoginPage = () => {
                             onError={handleLoginError}
                             shape="circle"
                             logo_alignment="center"
+                            useOneTap={true}
+                            cancel_on_tap_outside={true}
                         />
                     </div>
-                    <div className="flex flex-col justify-center items-center pl-20 hover:backdrop-blur-sm transition duration-300 z-10 relative group cursor-pointer">
-                        <h1 className="text-5xl font-bold text-white mb-32 text-center">Dashboard</h1>
+
+                    <button
+                        onClick={goToDashboard}
+                        className="flex flex-col justify-center items-center pl-20 hover:backdrop-blur-sm transition duration-300 z-10 relative group cursor-pointer"
+                    >
+                        <h1 className="text-5xl font-bold text-white mb-32 text-center">
+                            Dashboard
+                        </h1>
                         <div className="absolute transform transition-opacity duration-300 opacity-0 group-hover:opacity-100">
                             <span className="block w-6 h-6 border-t-2 border-r-2 border-white transform rotate-45"></span>
                         </div>
-                    </div>
+                    </button>
                 </>
             )}
         </div>
