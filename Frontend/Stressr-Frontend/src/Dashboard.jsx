@@ -117,7 +117,6 @@ const Dashboard = () => {
                             language={language}
                             setLanguage={setLanguage}
                         />
-                        <SelectorMenu />
                     </div>
                 </>
             )}

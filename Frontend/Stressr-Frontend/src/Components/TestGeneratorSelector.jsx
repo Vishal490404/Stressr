@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import InputParameters from './InputParameters'; // Import the new component
+import InputParameters from './InputParameters'; 
 
-export function SelectorMenu() {
+export function SelectorMenu({ onPayloadChange }) { // Accept onPayloadChange as prop
     const [activeTab, setActiveTab] = useState('Trivial_gens');
     const [selectedGenerator, setSelectedGenerator] = useState('Generator 1');
     const [uploadedFile, setUploadedFile] = useState(null);
-    const [stdinInput, setStdinInput] = useState('');
+    const [stdinInput, setStdinInput] = useState(''); 
 
     const handleTabClick = (tabId) => {
         setActiveTab(tabId);
@@ -19,11 +19,22 @@ export function SelectorMenu() {
         setStdinInput(e.target.value);
     };
 
+    const handleGeneratorChange = (e) => {
+        const newGenerator = e.target.value;
+        setSelectedGenerator(newGenerator);
+
+        // Call the onPayloadChange prop to pass data to the parent (MainEditor)
+        onPayloadChange({
+            generator_id: newGenerator,
+            params: '' // Add logic for params if necessary
+        });
+    };
+
     return (
-       <div className="main-editor-container-1 m-0 ">
+        <div className="main-editor-container-1 m-0 ">
             <div className="grid grid-flow-row rounded-2xl">
                 <button
-                    className={`p-2  ${activeTab === 'Trivial_gens' ? 'bg-gray-800 text-blue-400 font-bold border-2 border-b-0 rounded-b-none' : 'bg-gray-600 hover:bg-gray-500 text-gray-300 border'}`}
+                    className={`p-2 ${activeTab === 'Trivial_gens' ? 'bg-gray-800 text-blue-400 font-bold border-2 border-b-0 rounded-b-none' : 'bg-gray-600 hover:bg-gray-500 text-gray-300 border'}`}
                     onClick={() => handleTabClick('Trivial_gens')}
                 >
                     Trivial Gens
@@ -41,14 +52,15 @@ export function SelectorMenu() {
                     AI Gens
                 </button>
             </div>
+
             <div className={`editor-container ${activeTab === 'Trivial_gens' || activeTab === 'User_gens' || activeTab === 'Ai_gens' ? 'shadow-lg rounded-2xl' : ''}`}>
                 {activeTab === 'Trivial_gens' && (
                     <div id="Trivial_gens">
                         <h1 className="editor-title h-40">Choose a Test Case Generator</h1>
-                        <div className="flex justify-center mb-4"> {/* Center the select box */}
+                        <div className="flex justify-center mb-4">
                             <select
                                 value={selectedGenerator}
-                                onChange={(e) => setSelectedGenerator(e.target.value)}
+                                onChange={handleGeneratorChange} // Call handleGeneratorChange instead
                                 className="border p-2 rounded-lg w-1/2 bg-gray-700 text-gray-300"
                             >
                                 <option value="0" className="bg-gray-700 text-gray-300">Select a generator</option>
@@ -63,6 +75,7 @@ export function SelectorMenu() {
                         <InputParameters selectedGenerator={selectedGenerator} />
                     </div>
                 )}
+
                 {activeTab === 'User_gens' && (
                     <div id="User_gens">
                         <h1 className="editor-title">Upload a File and Provide Input</h1>
@@ -89,6 +102,7 @@ export function SelectorMenu() {
                         </div>
                     </div>
                 )}
+
                 {activeTab === 'Ai_gens' && (
                     <div id="Ai_gens ">
                         <h1 className="editor-title">Hello AI Gens</h1>
