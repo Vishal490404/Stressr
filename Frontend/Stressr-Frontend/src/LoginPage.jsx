@@ -26,8 +26,10 @@ const LoginPage = () => {
     }, []);
 
     const handleLoginSuccess = (credentialResponse) => {
+
         const decodedResponse = jwtDecode(credentialResponse.credential);
-        const name = decodedResponse.name || "User";
+        // console.log(decodedResponse)
+        const name = decodedResponse.given_name || "User";
         setUserName(name);
         localStorage.setItem('userName', name);
 

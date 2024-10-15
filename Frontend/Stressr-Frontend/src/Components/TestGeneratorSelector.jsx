@@ -20,44 +20,44 @@ export function SelectorMenu() {
     };
 
     return (
-        <div className="m-10">
-            <div className="grid grid-flow-col">
+       <div className="main-editor-container-1 m-0 ">
+            <div className="grid grid-flow-row rounded-2xl">
                 <button
-                    className={`p-2 rounded-t-lg ${activeTab === 'Trivial_gens' ? 'bg-white text-blue-600 font-bold border-2 border-b-0 rounded-b-none' : 'bg-gray-200 hover:bg-gray-300 border'}`}
+                    className={`p-2  ${activeTab === 'Trivial_gens' ? 'bg-gray-800 text-blue-400 font-bold border-2 border-b-0 rounded-b-none' : 'bg-gray-600 hover:bg-gray-500 text-gray-300 border'}`}
                     onClick={() => handleTabClick('Trivial_gens')}
                 >
                     Trivial Gens
                 </button>
                 <button
-                    className={`p-2 rounded-t-lg ${activeTab === 'User_gens' ? 'bg-white text-blue-600 font-bold border-2 border-b-0 rounded-b-none' : 'bg-gray-200 hover:bg-gray-300 border'}`}
+                    className={`p-2 ${activeTab === 'User_gens' ? 'bg-gray-800 text-blue-400 font-bold border-2 border-b-0 rounded-b-none' : 'bg-gray-600 hover:bg-gray-500 text-gray-300 border'}`}
                     onClick={() => handleTabClick('User_gens')}
                 >
                     User Gens
                 </button>
                 <button
-                    className={`p-2 rounded-t-lg ${activeTab === 'Ai_gens' ? 'bg-white text-blue-600 font-bold border-2 border-b-0 rounded-b-none ' : 'bg-gray-200 hover:bg-gray-300 border'}`}
+                    className={`p-2  ${activeTab === 'Ai_gens' ? 'bg-gray-800 text-blue-400 font-bold border-2 border-b-0 rounded-b-none' : 'bg-gray-600 hover:bg-gray-500 text-gray-300 border'}`}
                     onClick={() => handleTabClick('Ai_gens')}
                 >
                     AI Gens
                 </button>
             </div>
-            <div className={`border-2 border-t-0 rounded-b-lg bg-white h-80 p-5 transition-opacity duration-500 ${activeTab === 'Trivial_gens' || activeTab === 'User_gens' || activeTab === 'Ai_gens' ? 'shadow-lg rounded-t-none' : ''}`}>
+            <div className={`editor-container ${activeTab === 'Trivial_gens' || activeTab === 'User_gens' || activeTab === 'Ai_gens' ? 'shadow-lg rounded-2xl' : ''}`}>
                 {activeTab === 'Trivial_gens' && (
                     <div id="Trivial_gens">
-                        <h1>Choose a Test Case Generator</h1>
+                        <h1 className="editor-title h-40">Choose a Test Case Generator</h1>
                         <div className="flex justify-center mb-4"> {/* Center the select box */}
                             <select
                                 value={selectedGenerator}
                                 onChange={(e) => setSelectedGenerator(e.target.value)}
-                                className="border p-2 rounded-lg w-1/2"
+                                className="border p-2 rounded-lg w-1/2 bg-gray-700 text-gray-300"
                             >
-                                <option value="0">Select a generator</option>
-                                <option value="1">Single Number Generator with testcases</option>
-                                <option value="2">Single Number Generator</option>
-                                <option value="3">Two Space Separated Integers Generator with testcases</option>
-                                <option value="4">Two Space Separated Integers Generator</option>
-                                <option value="5">Array Generator with testcases</option>
-                                <option value="6">Array Generator</option>
+                                <option value="0" className="bg-gray-700 text-gray-300">Select a generator</option>
+                                <option value="1" className="bg-gray-700 text-gray-300">Single Number Generator with testcases</option>
+                                <option value="2" className="bg-gray-700 text-gray-300">Single Number Generator</option>
+                                <option value="3" className="bg-gray-700 text-gray-300">Two Space Separated Integers Generator with testcases</option>
+                                <option value="4" className="bg-gray-700 text-gray-300">Two Space Separated Integers Generator</option>
+                                <option value="5" className="bg-gray-700 text-gray-300">Array Generator with testcases</option>
+                                <option value="6" className="bg-gray-700 text-gray-300">Array Generator</option>
                             </select>
                         </div>
                         <InputParameters selectedGenerator={selectedGenerator} />
@@ -65,33 +65,33 @@ export function SelectorMenu() {
                 )}
                 {activeTab === 'User_gens' && (
                     <div id="User_gens">
-                        <h1>Upload a File and Provide Input</h1>
+                        <h1 className="editor-title">Upload a File and Provide Input</h1>
                         <div className="mb-4">
                             <input
                                 type="file"
                                 onChange={handleFileUpload}
-                                className="border p-2 rounded-lg"
+                                className="border p-2 rounded-lg bg-gray-700 text-gray-300"
                             />
                             {uploadedFile && (
-                                <p className="mt-2">File uploaded: {uploadedFile.name}</p>
+                                <p className="mt-2 text-gray-300">File uploaded: {uploadedFile.name}</p>
                             )}
                         </div>
                         <div>
-                            <label htmlFor="stdin" className="block mb-2">
+                            <label htmlFor="stdin" className="block mb-2 text-gray-300">
                                 Provide Input (stdin):
                             </label>
                             <textarea
                                 id="stdin"
                                 value={stdinInput}
                                 onChange={handleStdinChange}
-                                className="border p-2 rounded-lg w-full h-24"
+                                className="border p-2 rounded-lg w-full h-24 bg-gray-700 text-gray-300"
                             />
                         </div>
                     </div>
                 )}
                 {activeTab === 'Ai_gens' && (
-                    <div id="Ai_gens">
-                        <h1>Hello AI Gens</h1>
+                    <div id="Ai_gens ">
+                        <h1 className="editor-title">Hello AI Gens</h1>
                     </div>
                 )}
             </div>
