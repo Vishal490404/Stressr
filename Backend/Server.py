@@ -60,7 +60,7 @@ async def handle_multiple_code_executions():
     generator_lang = 'python'
 
     client = Request.PistonClient()
-    for _ in range(1000):
+    for _ in range(10):
         file_generator = Request.File(content=generator_code, filename="Main")
         generator_output = await client.execute(generator_lang, [file_generator], stdin=generator_params)
 
