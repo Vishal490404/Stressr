@@ -39,7 +39,7 @@ const LoginPage = () => {
                 background: 'white',
                 color: 'black',
             },
-            duration: 2000, 
+            duration: 2000,
         });
     };
 
@@ -50,7 +50,7 @@ const LoginPage = () => {
                 background: 'white',
                 color: 'black',
             },
-            duration: 2000, 
+            duration: 2000,
         });
     };
 
@@ -64,7 +64,7 @@ const LoginPage = () => {
                 background: 'white',
                 color: 'black',
             },
-            duration: 2000, 
+            duration: 2000,
         });
 
         setTimeout(() => {
@@ -85,22 +85,31 @@ const LoginPage = () => {
                     background: 'white',
                     color: 'black',
                 },
-                duration: 2000, 
+                duration: 2000,
             });
         }
     };
 
     return (
-        <div className={`w-screen h-screen grid grid-cols-2 transition-opacity duration-300`} style={{ position: "absolute", zIndex: 1 }}>
+        <div className={`md:w-screen h-screen grid grid-cols-2 grid-rows-3 transition-opacity duration-300`} style={{ position: "absolute", zIndex: 1 }}>
             {loading ? (
                 <div className="flex justify-center items-center w-screen h-screen">
                     <HashLoader color="#ffffff" loading={true} size={60} />
                 </div>
             ) : isLoggedIn ? (
                 <>
+                    <div className=' col-span-2 flex justify-center items-center'>
+                        <div className=" transform flex flex-col w-auto mt-4  bg-white bg-opacity-20 backdrop-blur-sm rounded-3xl shadow-lg border border-white p-6 z-20">
+                            <h1 className="text-3xl font-semibold text-white mb-4 text-center">Welcome!</h1>
+                            <h1 className="text-4xl font-bold text-white mb-4 text-center">{userName}</h1>
+                            <button onClick={handleLogout} className="bg-white text-black px-4 py-2 rounded-3xl hover:bg-gray-300">
+                                Logout
+                            </button>
+                        </div>
+                    </div>
                     <button
                         onClick={goToAbout}
-                        className="flex flex-col justify-center items-center pr-20 hover:backdrop-blur-sm transition duration-300 z-10 relative group cursor-pointer"
+                        className="flex flex-col justify-center items-center pr-20 hover:backdrop-blur-sm transition duration-300 z-10 relative group cursor-pointer row-span-2"
                     >
                         <h1 className="text-5xl font-bold text-white mb-32 text-center">User Guide</h1>
                         <div className="absolute transform transition-opacity duration-300 opacity-0 group-hover:opacity-100">
@@ -108,17 +117,11 @@ const LoginPage = () => {
                         </div>
                     </button>
 
-                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col h-48 w-auto bg-white bg-opacity-20 backdrop-blur-sm rounded-3xl shadow-lg border border-white p-6 z-20">
-                        <h1 className="text-3xl font-semibold text-white mb-4 text-center">Welcome!</h1>
-                        <h1 className="text-4xl font-bold text-white mb-4 text-center">{userName}</h1>
-                        <button onClick={handleLogout} className="bg-white text-black px-4 py-2 rounded-3xl hover:bg-gray-300">
-                            Logout
-                        </button>
-                    </div>
+
 
                     <button
                         onClick={goToDashboard}
-                        className="flex flex-col justify-center items-center pl-20 hover:backdrop-blur-sm transition duration-300 z-10 relative group cursor-pointer"
+                        className="flex flex-col justify-center items-center pl-20 hover:backdrop-blur-sm transition duration-300 z-10 relative group cursor-pointer row-span-2"
                     >
                         <h1 className="text-5xl font-bold text-white mb-32 text-center">Dashboard</h1>
                         <div className="absolute transform transition-opacity duration-300 opacity-0 group-hover:opacity-100">
@@ -128,9 +131,23 @@ const LoginPage = () => {
                 </>
             ) : (
                 <>
+                    <div className='col-span-2 flex justify-center items-center'>
+                        <div className=" transform  flex flex-col h-48 w-auto bg-white bg-opacity-20 backdrop-blur-sm rounded-3xl shadow-lg border border-white p-6 z-20">
+                            <h1 className="text-3xl font-semibold text-white mb-14 text-center">Hop into Stressr!</h1>
+
+                            <GoogleLogin
+                                onSuccess={handleLoginSuccess}
+                                onError={handleLoginError}
+                                shape="circle"
+                                logo_alignment="center"
+                                useOneTap={true}
+                                cancel_on_tap_outside={true}
+                            />
+                        </div>
+                    </div>
                     <button
                         onClick={goToAbout}
-                        className="flex flex-col justify-center items-center pr-20 hover:backdrop-blur-sm transition duration-300 z-10 relative group cursor-pointer"
+                        className="flex flex-col justify-center row-span-2 items-center pr-20 hover:backdrop-blur-sm transition duration-300 z-10 relative group cursor-pointer"
                     >
                         <h1 className="text-5xl font-bold text-white mb-32 text-center">User Guide</h1>
                         <div className="absolute transform transition-opacity duration-300 opacity-0 group-hover:opacity-100">
@@ -138,22 +155,9 @@ const LoginPage = () => {
                         </div>
                     </button>
 
-                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col h-48 w-96 bg-white bg-opacity-20 backdrop-blur-sm rounded-3xl shadow-lg border border-white p-6 z-20">
-                        <h1 className="text-3xl font-semibold text-white mb-14 text-center">Hop into Stressr!</h1>
-
-                        <GoogleLogin
-                            onSuccess={handleLoginSuccess}
-                            onError={handleLoginError}
-                            shape="circle"
-                            logo_alignment="center"
-                            useOneTap={true}
-                            cancel_on_tap_outside={true}
-                        />
-                    </div>
-
                     <button
                         onClick={goToDashboard}
-                        className="flex flex-col justify-center items-center pl-20 hover:backdrop-blur-sm transition duration-300 z-10 relative group cursor-pointer"
+                        className="flex flex-col justify-center row-span-2 items-center pl-20 hover:backdrop-blur-sm transition duration-300 z-10 relative group cursor-pointer"
                     >
                         <h1 className="text-5xl font-bold text-white mb-32 text-center">
                             Dashboard

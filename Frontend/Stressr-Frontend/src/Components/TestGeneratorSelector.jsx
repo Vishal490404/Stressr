@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import InputParameters from './InputParameters'; 
+import InputParameters from './InputParameters';
 
 export function SelectorMenu({ onPayloadChange }) { // Accept onPayloadChange as prop
     const [activeTab, setActiveTab] = useState('Trivial_gens');
     const [selectedGenerator, setSelectedGenerator] = useState('Generator 1');
     const [uploadedFile, setUploadedFile] = useState(null);
-    const [stdinInput, setStdinInput] = useState(''); 
+    const [stdinInput, setStdinInput] = useState('');
 
     const handleTabClick = (tabId) => {
         setActiveTab(tabId);
@@ -31,33 +31,58 @@ export function SelectorMenu({ onPayloadChange }) { // Accept onPayloadChange as
     };
 
     return (
-        <div className="main-editor-container-1 m-0 ">
-            <div className="grid grid-flow-row rounded-2xl">
+        <div className="ml-0 mt-0 w-full h-80 grid grid-cols-5 px-8">
+            <div className="col-span-1 flex flex-col justify-evenly h-full  bg-white bg-opacity-20 backdrop-blur-sm border rounded-xl editor-container  mr-3 ">
                 <button
-                    className={`p-2 ${activeTab === 'Trivial_gens' ? 'bg-gray-800 text-blue-400 font-bold border-2 border-b-0 rounded-b-none' : 'bg-gray-600 hover:bg-gray-500 text-gray-300 border'}`}
+                    className={`relative inline-flex items-center px-12 py-3 overflow-hidden text-lg font-medium 
+              text-indigo-600 border-2 border-indigo-600 rounded-full hover:text-white group 
+              hover:bg-gray-50 ${activeTab === 'Trivial_gens' ? 'font-bold  mx-2' : 'mx-3'}`}
                     onClick={() => handleTabClick('Trivial_gens')}
                 >
-                    Trivial Gens
+                    <span className="absolute left-0 block w-full h-0 transition-all bg-indigo-600 opacity-100 group-hover:h-full top-1/2 group-hover:top-0 duration-400 ease"></span>
+                    <span className="absolute right-0 flex items-center justify-start w-10 h-10 duration-300 transform translate-x-full group-hover:translate-x-0 ease">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                        </svg>
+                    </span>
+                    <span className="relative">Trivial Gens</span>
                 </button>
                 <button
-                    className={`p-2 ${activeTab === 'User_gens' ? 'bg-gray-800 text-blue-400 font-bold border-2 border-b-0 rounded-b-none' : 'bg-gray-600 hover:bg-gray-500 text-gray-300 border'}`}
+                    className={`relative inline-flex items-center px-12 py-3 overflow-hidden text-lg font-medium 
+              text-indigo-600 border-2 border-indigo-600 rounded-full hover:text-white group 
+              hover:bg-gray-50 ${activeTab === 'User_gens' ? 'font-bold  mx-2' : 'mx-3'}`}
                     onClick={() => handleTabClick('User_gens')}
                 >
-                    User Gens
+                    <span className="absolute left-0 block w-full h-0 transition-all bg-indigo-600 opacity-100 group-hover:h-full top-1/2 group-hover:top-0 duration-400 ease"></span>
+                    <span className="absolute right-0 flex items-center justify-start w-10 h-10 duration-300 transform translate-x-full group-hover:translate-x-0 ease">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                        </svg>
+                    </span>
+                    <span className="relative pl-3">User Gens</span>
                 </button>
                 <button
-                    className={`p-2  ${activeTab === 'Ai_gens' ? 'bg-gray-800 text-blue-400 font-bold border-2 border-b-0 rounded-b-none' : 'bg-gray-600 hover:bg-gray-500 text-gray-300 border'}`}
+                    className={`relative inline-flex items-center px-12 py-3 overflow-hidden text-lg font-medium 
+              text-indigo-600 border-2 border-indigo-600 rounded-full hover:text-white group 
+              hover:bg-gray-50 ${activeTab === 'Ai_gens' ? 'font-bold  mx-2' : 'mx-3'}`}
                     onClick={() => handleTabClick('Ai_gens')}
                 >
-                    AI Gens
+                    <span className="absolute left-0 block w-full h-0 transition-all bg-indigo-600 opacity-100 group-hover:h-full top-1/2 group-hover:top-0 duration-400 ease"></span>
+                    <span className="absolute right-0 flex items-center justify-start w-10 h-10 duration-300 transform translate-x-full group-hover:translate-x-0 ease">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                        </svg>
+                    </span>
+                    <span className="relative pl-5">AI Gens</span>
                 </button>
             </div>
 
-            <div className={`editor-container ${activeTab === 'Trivial_gens' || activeTab === 'User_gens' || activeTab === 'Ai_gens' ? 'shadow-lg rounded-2xl' : ''}`}>
+            <div className={`editor-container ${activeTab === 'Trivial_gens' || activeTab === 'User_gens' || activeTab === 'Ai_gens' ? 'shadow-lg rounded-2xl col-span-4' : ''}`}>
+
                 {activeTab === 'Trivial_gens' && (
-                    <div id="Trivial_gens">
-                        <h1 className="editor-title h-40">Choose a Test Case Generator</h1>
-                        <div className="flex justify-center mb-4">
+                    <div id="Trivial_gens ">
+                        <h1 className="editor-title ">Choose a Test Case Generator</h1>
+                        <div className="flex justify-center mt-2">
                             <select
                                 value={selectedGenerator}
                                 onChange={handleGeneratorChange} // Call handleGeneratorChange instead
@@ -86,7 +111,7 @@ export function SelectorMenu({ onPayloadChange }) { // Accept onPayloadChange as
                                 className="border p-2 rounded-lg bg-gray-700 text-gray-300"
                             />
                             {uploadedFile && (
-                                <p className="mt-2 text-gray-300">File uploaded: {uploadedFile.name}</p>
+                                <p className="mt-4 text-gray-300">File uploaded: {uploadedFile.name}</p>
                             )}
                         </div>
                         <div>

@@ -20,11 +20,11 @@ const InputParameters = ({ selectedGenerator }) => {
     const isArrayElemMaxValid = !isNaN(arrayElemMax);
 
     return (
-        <div className="mt-4">
+        <div className="h-full w-full">
             {selectedGenerator === '1' && (
                 <div>
-                    <div className="flex flex-col gap-4">
-                        <div className="relative">
+                    <div className="flex flex-row mt-20 justify-evenly">
+                        <div className="">
                             <label className="block mb-2">Min Value:</label>
                             <input
                                 type="text"
@@ -34,7 +34,7 @@ const InputParameters = ({ selectedGenerator }) => {
                             />
                             {!isMinNValid && <span className="absolute text-red-500 text-xs top-1 right-1">Invalid input</span>}
                         </div>
-                        <div className="relative">
+                        <div className="">
                             <label className="block mb-2">Max Value:</label>
                             <input
                                 type="text"
@@ -49,7 +49,7 @@ const InputParameters = ({ selectedGenerator }) => {
             )}
             {selectedGenerator === '2' && (
                 <div>
-                    <div className="flex flex-col gap-4">
+                    <div className="flex flex-row mt-20 justify-evenly">
                         <div className="relative">
                             <label className="block mb-2">Min Value:</label>
                             <input
@@ -75,8 +75,8 @@ const InputParameters = ({ selectedGenerator }) => {
             )}
             {selectedGenerator === '3' && (
                 <div>
-                    <div className="flex flex-row gap-4">
-                        <div className="relative">
+                    <div className="flex flex-row mt-20 justify-evenly">
+                        <div className="">
                             <label className="block mb-2">First Number Min Value:</label>
                             <input
                                 type="text"
@@ -86,7 +86,7 @@ const InputParameters = ({ selectedGenerator }) => {
                             />
                             {!isMinNValid && <span className="absolute text-red-500 text-xs top-1 right-1">Invalid input</span>}
                         </div>
-                        <div className="relative">
+                        <div className="">
                             <label className="block mb-2">First Number Max Value:</label>
                             <input
                                 type="text"
@@ -96,7 +96,7 @@ const InputParameters = ({ selectedGenerator }) => {
                             />
                             {!isMaxNValid && <span className="absolute text-red-500 text-xs top-1 right-1">Invalid input</span>}
                         </div>
-                        <div className="relative">
+                        <div className="">
                             <label className="block mb-2">Second Number Min Value:</label>
                             <input
                                 type="text"
@@ -106,7 +106,7 @@ const InputParameters = ({ selectedGenerator }) => {
                             />
                             {!isMinN2Valid && <span className="absolute text-red-500 text-xs top-1 right-1">Invalid input</span>}
                         </div>
-                        <div className="relative">
+                        <div className="">
                             <label className="block mb-2">Second Number Max Value:</label>
                             <input
                                 type="text"
@@ -121,7 +121,7 @@ const InputParameters = ({ selectedGenerator }) => {
             )}
             {selectedGenerator === '4' && (
                 <div>
-                    <div className="flex flex-row gap-4">
+                    <div className="flex flex-row mt-20 justify-evenly">
                         <div className="relative">
                             <label className="block mb-2">First Number Min Value:</label>
                             <input
@@ -167,7 +167,7 @@ const InputParameters = ({ selectedGenerator }) => {
             )}
             {selectedGenerator === '5' && (
                 <div>
-                    <div className="flex flex-row gap-4">
+                    <div className="flex flex-row mt-20 justify-evenly">
                         <div className="relative">
                             <label className="block mb-2">Array Size Min:</label>
                             <input
@@ -213,7 +213,7 @@ const InputParameters = ({ selectedGenerator }) => {
             )}
             {selectedGenerator === '6' && (
                 <div>
-                    <div className="flex flex-row gap-4">
+                    <div className="flex flex-row mt-20 justify-evenly">
                         <div className="relative">
                             <label className="block mb-2">Array Size Min:</label>
                             <input
