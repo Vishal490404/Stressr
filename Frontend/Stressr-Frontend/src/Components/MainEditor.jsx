@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Editor } from '@monaco-editor/react';
 import { LANGUAGES } from './AvailableStuff';
 import './MainEditor.css';
 import { languageTemplates } from './AvailableStuff';
 import { toast } from 'react-hot-toast';
 import { SelectorMenu } from './TestGeneratorSelector'; 
+import HashLoader from "react-spinners/HashLoader";
 
 const MainEditor = () => {
   const [code1, setCode1] = useState(languageTemplates.python);
@@ -16,7 +17,9 @@ const MainEditor = () => {
     generator_id: null,
     params: '',
   });
-  const [differences, setDifferences] = useState(null); 
+  const [differences, setDifferences] = useState([]);
+
+  const loaderRef = useRef(null);
 
   const handleTestCasePayload = (payload) => {
     const { generator_id, params } = payload;
@@ -52,6 +55,12 @@ const MainEditor = () => {
 
   const handleSendRequest = async () => {
     setIsSending(true);
+    
+    // Scroll to the loader
+    if (loaderRef.current) {
+      loaderRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+
     const payload = {
       test_generation_option: {
         generator_id: parseInt(testCasePayload.generator_id, 10),
@@ -86,7 +95,7 @@ const MainEditor = () => {
         console.log(await response.text());
       }
     } catch (error) {
-      toast.error('Failed to send request');
+      toast.error('Failed to generate test cases');
       console.error('Error:', error);
     } finally {
       setIsSending(false);
@@ -95,113 +104,130 @@ const MainEditor = () => {
 
   return (
     <>
-      <div className="main-editor-container">
-        <div className="editor-container">
-          <h2 className="editor-title">Sub-optimal Solution</h2>
-          <div className="language-selector">
-            <label htmlFor="language1">Language:</label>
-            <select id="language1" value={language1} onChange={handleLanguageChange1}>
-              {LANGUAGES.map((lang) => (
-                <option key={lang} value={lang.toLowerCase()}>
-                  {lang}
-                </option>
-              ))}
-            </select>
+      <div className="relative">
+        <div className={`${isSending ? 'opacity-50 pointer-events-none' : ''}`}>
+          <div className="main-editor-container">
+            <div className="editor-container">
+              <h2 className="editor-title">Sub-optimal Solution</h2>
+              <div className="language-selector">
+                <label htmlFor="language1">Language:</label>
+                <select id="language1" value={language1} onChange={handleLanguageChange1}>
+                  {LANGUAGES.map((lang) => (
+                    <option key={lang} value={lang.toLowerCase()}>
+                      {lang}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <Editor
+                height="65vh"
+                width="100%"
+                language={language1}
+                theme="vs-dark"
+                value={code1}
+                onChange={handleEditorChange1}
+                options={{
+                  fontSize: 14,
+                  minimap: { enabled: false },
+                  suggestOnTriggerCharacters: true,
+                  wordBasedSuggestions: true,
+                  scrollBeyondLastLine: false,
+                }}
+              />
+            </div>
+
+            <div className="editor-container">
+              <h2 className="editor-title">Optimal Solution</h2>
+              <div className="language-selector">
+                <label htmlFor="language2">Language:</label>
+                <select id="language2" value={language2} onChange={handleLanguageChange2}>
+                  {LANGUAGES.map((lang) => (
+                    <option key={lang} value={lang.toLowerCase()}>
+                      {lang}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <Editor
+                height="65vh"
+                width="100%"
+                language={language2}
+                theme="vs-dark"
+                value={code2}
+                onChange={handleEditorChange2}
+                options={{
+                  fontSize: 14,
+                  minimap: { enabled: false },
+                  suggestOnTriggerCharacters: true,
+                  wordBasedSuggestions: true,
+                  scrollBeyondLastLine: false,
+                }}
+              />
+            </div>
           </div>
-          <Editor
-            height="65vh"
-            width="100%"
-            language={language1}
-            theme="vs-dark"
-            value={code1}
-            onChange={handleEditorChange1}
-            options={{
-              fontSize: 14,
-              minimap: { enabled: false },
-              suggestOnTriggerCharacters: true,
-              wordBasedSuggestions: true,
-              scrollBeyondLastLine: false,
-            }}
-          />
-        </div>
-
-        <div className="editor-container">
-          <h2 className="editor-title">Optimal Solution</h2>
-          <div className="language-selector">
-            <label htmlFor="language2">Language:</label>
-            <select id="language2" value={language2} onChange={handleLanguageChange2}>
-              {LANGUAGES.map((lang) => (
-                <option key={lang} value={lang.toLowerCase()}>
-                  {lang}
-                </option>
-              ))}
-            </select>
+          <div className="flex flex-col">
+          <div className="mt-4 w-full">
+            <SelectorMenu onPayloadChange={handleTestCasePayload} />
           </div>
-          <Editor
-            height="65vh"
-            width="100%"
-            language={language2}
-            theme="vs-dark"
-            value={code2}
-            onChange={handleEditorChange2}
-            options={{
-              fontSize: 14,
-              minimap: { enabled: false },
-              suggestOnTriggerCharacters: true,
-              wordBasedSuggestions: true,
-              scrollBeyondLastLine: false,
-            }}
-          />
+
+          <div className="mt-8 flex justify-center">
+            <button
+              onClick={handleSendRequest}
+              className={`relative inline-block text-lg px-5 py-3 font-medium leading-tight text-white transition-colors duration-300 ease-out border-2 border-gray-900 rounded-lg overflow-hidden group disabled:opacity-50 ${isSending ? 'cursor-not-allowed' : ''}`}
+              disabled={isSending}
+            >
+              <span className="absolute inset-0 w-full h-full bg-gray-50 rounded-lg"></span>
+              <span className="absolute left-0 w-48 h-48 -ml-2 transition-all duration-300 origin-top-right -rotate-90 -translate-x-full translate-y-12 bg-gray-900 group-hover:-rotate-180 ease"></span>
+
+              <span className="relative z-10 text-gray-800 group-hover:text-white ">
+                {isSending ? 'Generating...' : 'Generate Tests'}
+              </span>
+
+              <span className="absolute bottom-0 right-0 w-full h-12 -mb-1 -mr-1 transition-all duration-200 ease-linear color-white rounded-lg group-hover:mb-0 group-hover:mr-0"></span>
+            </button>
+          </div>
+          </div>
+
+          {!isSending && differences && differences.length > 0 && (
+            <div className="mt-8 bg-gray-800 rounded-lg p-6 shadow-lg">
+              <h3 className="text-2xl font-semibold text-white mb-4">Differences</h3>
+              <div className="space-y-6">
+                {differences.map((difference, index) => (
+                  <div key={index} className="bg-gray-700 rounded-lg p-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <h4 className="text-lg font-medium text-gray-300">Output Code 1</h4>
+                        <pre className="bg-gray-900 p-3 rounded text-sm text-gray-300 overflow-x-auto">
+                          {difference.output_code1}
+                        </pre>
+                      </div>
+                      <div className="space-y-2">
+                        <h4 className="text-lg font-medium text-gray-300">Output Code 2</h4>
+                        <pre className="bg-gray-900 p-3 rounded text-sm text-gray-300 overflow-x-auto">
+                          {difference.output_code2}
+                        </pre>
+                      </div>
+                    </div>
+                    <div className="mt-4">
+                      <h4 className="text-lg font-medium text-gray-300">Test Case</h4>
+                      <pre className="bg-gray-900 p-3 rounded text-sm text-gray-300 overflow-x-auto">
+                        {difference.test_case}
+                      </pre>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
+
+        {isSending && (
+          <div ref={loaderRef} className="fixed inset-0 bg-gray-900 bg-opacity-75 flex flex-col items-center justify-center z-50">
+            <HashLoader color="#ffffff" loading={isSending} size={60} />
+            <p className="mt-8 text-white text-xl">Finding test cases for you...</p>
+          </div>
+        )}
       </div>
-
-      <div className="mt-4 w-full">
-        <SelectorMenu onPayloadChange={handleTestCasePayload} />
-      </div>
-
-      <div className="f mt-4">
-  <button
-    onClick={handleSendRequest}
-    className={`relative inline-block text-lg px-5 py-3 font-medium leading-tight text-white transition-colors duration-300 ease-out border-2 border-gray-900 rounded-lg overflow-hidden group disabled:opacity-50 ${isSending ? 'cursor-not-allowed' : ''}`}
-    disabled={isSending}
-  >
-    <span className="absolute inset-0 w-full h-full bg-gray-50 rounded-lg"></span>
-    <span className="absolute left-0 w-48 h-48 -ml-2 transition-all duration-300 origin-top-right -rotate-90 -translate-x-full translate-y-12 bg-gray-900 group-hover:-rotate-180 ease"></span>
-
-    <span className="relative z-10 text-gray-800 group-hover:text-white">
-      {isSending ? 'Sending...' : 'Send Request'}
-    </span>
-
-    <span className="absolute bottom-0 right-0 w-full h-12 -mb-1 -mr-1 transition-all duration-200 ease-linear color-white rounded-lg group-hover:mb-0 group-hover:mr-0"></span>
-  </button>
-</div>
-
-
-      {differences && differences.length > 0 && (
-        <div className="mt-4">
-          <h3 className="text-lg font-semibold">Differences:</h3>
-          <ul className="list-disc pl-5">
-            {differences.map((difference, index) => (
-              <li key={index} className="text-gray-300">
-                <strong>Output Code 1:</strong> {difference.output_code1}
-                <br />
-                <strong>Output Code 2:</strong> {difference.output_code2}
-                <br />
-                <strong>Test Case:</strong> {difference.test_case}
-                <br />
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* Display formatted payload
-      <div className="mt-4">
-        <h3 className="text-lg font-semibold text-white">Test Case Payload:</h3>
-        <pre className="bg-gray-800 p-4 rounded-lg text-white overflow-auto">
-          {formattedPayload}
-        </pre>
-      </div> */}
     </>
   );
 };

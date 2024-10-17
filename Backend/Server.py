@@ -4,11 +4,16 @@ from pymongo import MongoClient
 import os
 from dotenv import load_dotenv
 import Request
-
+import google.generativeai as genai
+import json
 load_dotenv()
 
 app = Quart(__name__)
 app = cors(app)
+
+# Configure the Gemini AI
+genai.configure(api_key=os.getenv('GOOGLE_AI_API_KEY'))
+model = genai.GenerativeModel('gemini-pro')
 
 def return_Gen(generator_id: int):
     db_url = os.getenv('DB_URL_FOR_GENERATORS')
@@ -90,6 +95,65 @@ async def handle_multiple_code_executions():
             })
 
     return jsonify({"differences": differences})
+
+@app.route('/ai-generate', methods=['POST'])
+async def handle_ai_generation():
+    data = await request.get_json()
+    prompt = data.get("prompt")
+    
+    if not prompt:
+        return jsonify({"error": "No prompt provided"}), 400
+
+    try:
+        # Construct a more specific prompt for generating test case generators
+        full_prompt = f"""
+        Create a Python function that generates test cases based on the following description:
+        {prompt}
+        
+        The function should:
+        1. Be named 'generate_test_cases'
+        2. Take appropriate parameters for customization (e.g., number of test cases, range of values)
+        
+        3. Use Python's random module for generating random values
+        4. Include comments explaining the logic
+        5. Include a sample test case in the function in comments
+        6. If no test cases are required then the code should return generate a single test case
+        Provide only the Python code without any additional explanation.
+        """
+
+        response = model.generate_content(full_prompt)
+        generated_code = response.text
+
+        # Basic validation to ensure we got a Python function
+        if "def generate_test_cases" not in generated_code:
+            return jsonify({"error": "Failed to generate valid test case function"}), 500
+
+        # Store the generated code in MongoDB
+        db_url = os.getenv('DB_URL_FOR_GENERATORS')
+        cluster = MongoClient(db_url)
+        db = cluster['python_generators']
+        collection = db['generators']
+
+        # Get the next available ID
+        last_document = collection.find_one(sort=[("_id", -1)])
+        new_id = 1 if last_document is None else last_document["_id"] + 1
+
+        # Insert the new generator
+        generator_document = {
+            "_id": new_id,
+            "gen": generated_code,
+            "description": prompt
+        }
+        collection.insert_one(generator_document)
+
+        return jsonify({
+            "response": "Test case generator created successfully",
+            "generator_id": new_id,
+            "generator_code": generated_code
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(port=9563)

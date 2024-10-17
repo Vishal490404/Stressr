@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import InputParameters from './InputParameters';
 import PropTypes from 'prop-types';
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 export function SelectorMenu({ onPayloadChange }) { 
     const [activeTab, setActiveTab] = useState('Trivial_gens');
@@ -8,6 +10,10 @@ export function SelectorMenu({ onPayloadChange }) {
     const [uploadedFile, setUploadedFile] = useState(null);
     const [stdinInput, setStdinInput] = useState('');
     const [inputParameters, setInputParameters] = useState({});
+    const [aiPrompt, setAiPrompt] = useState('');
+    const [aiGeneratedCode, setAiGeneratedCode] = useState('');
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [showPreview, setShowPreview] = useState(false);
 
     const handleTabClick = (tabId) => {
         setActiveTab(tabId);
@@ -32,6 +38,38 @@ export function SelectorMenu({ onPayloadChange }) {
         });
     };
 
+    const handleAiPromptChange = (e) => {
+        setAiPrompt(e.target.value);
+    };
+
+    const generateAiTestCases = async () => {
+        if (!aiPrompt.trim()) {
+            alert('Please enter a prompt for the AI generator.');
+            return;
+        }
+
+        setIsGenerating(true);
+        setAiGeneratedCode(''); // Clear previous code
+
+        try {
+            const response = await axios.post('http://localhost:9563/ai-generate', { prompt: aiPrompt });
+            const { generator_id, generator_code } = response.data;
+
+            setAiGeneratedCode(generator_code);
+            
+            // Update the payload
+            onPayloadChange({
+                generator_id: `ai_generated_${generator_id}`,
+                params: { prompt: aiPrompt, generated_code: generator_code }
+            });
+        } catch (error) {
+            console.error('Error generating AI test cases:', error);
+            toast.error('Error generating test cases. Please try again.');
+        } finally {
+            setIsGenerating(false);
+        }
+    };
+
     useEffect(() => {
         // console.log(inputParameters);
         onPayloadChange({
@@ -40,13 +78,67 @@ export function SelectorMenu({ onPayloadChange }) {
         });
     }, [inputParameters, selectedGenerator]);
     
+    const handleDownloadCode = () => {
+        const codeLines = aiGeneratedCode.split('\n');
+        const trimmedCode = codeLines.slice(1, -1).join('\n');
+        
+        const blob = new Blob([trimmedCode], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = 'Stressr.py';  // Changed the file name to Stressr.py
+
+        document.body.appendChild(a);
+        a.click();
+
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+        toast.success('Test cases downloaded as Stressr.py', {
+            duration: 2000,
+            position: 'bottom-center',
+        });
+    };
+
+    const handleCopyCode = () => {
+        const codeLines = aiGeneratedCode.split('\n');
+        const trimmedCode = codeLines.slice(1, -1).join('\n');
+        navigator.clipboard.writeText(trimmedCode).then(() => {
+            toast.success('Code copied to clipboard!', {
+                duration: 2000,
+                position: 'bottom-center',
+            });
+        }, (err) => {
+            console.error('Could not copy text: ', err);
+            toast.error('Failed to copy code', {
+                duration: 2000,
+                position: 'bottom-center',
+            });
+        });
+    };
+
+    const handlePreviewCode = () => {
+        setShowPreview(true);
+    };
+
+    const closePreview = () => {
+        setShowPreview(false);
+    };
+
+    const displayCode = () => {
+        const codeLines = aiGeneratedCode.split('\n');
+        return codeLines.slice(1, -1).join('\n');
+    };
+
     return (
         <div className="ml-0 mt-0 w-full h-80 grid grid-cols-5 px-8">
-            <div className="col-span-1 flex flex-col justify-evenly h-full  bg-white bg-opacity-20 backdrop-blur-sm border rounded-xl editor-container  mr-3 ">
+            <div className="col-span-1 flex flex-col justify-evenly h-full bg-white bg-opacity-20 backdrop-blur-sm border rounded-xl editor-container mr-3">
                 <button
-                    className={`relative inline-flex items-center px-12 py-3 overflow-hidden text-lg font-medium 
+                    className={`relative inline-flex items-center justify-center px-6 py-3 overflow-hidden text-lg font-medium 
               text-indigo-600 border-2 border-indigo-600 rounded-full hover:text-white group 
-              hover:bg-gray-50 ${activeTab === 'Trivial_gens' ? 'font-bold  mx-2' : 'mx-3'}`}
+              hover:bg-gray-50 ${activeTab === 'Trivial_gens' ? 'font-bold' : ''} mx-2`}
                     onClick={() => handleTabClick('Trivial_gens')}
                 >
                     <span className="absolute left-0 block w-full h-0 transition-all bg-indigo-600 opacity-100 group-hover:h-full top-1/2 group-hover:top-0 duration-400 ease"></span>
@@ -58,9 +150,9 @@ export function SelectorMenu({ onPayloadChange }) {
                     <span className="relative">Pre-Defined Generators</span>
                 </button>
                 <button
-                    className={`relative inline-flex items-center px-12 py-3 overflow-hidden text-lg font-medium 
+                    className={`relative inline-flex items-center justify-center px-6 py-3 overflow-hidden text-lg font-medium 
               text-indigo-600 border-2 border-indigo-600 rounded-full hover:text-white group 
-              hover:bg-gray-50 ${activeTab === 'User_gens' ? 'font-bold  mx-2' : 'mx-3'}`}
+              hover:bg-gray-50 ${activeTab === 'User_gens' ? 'font-bold' : ''} mx-2`}
                     onClick={() => handleTabClick('User_gens')}
                 >
                     <span className="absolute left-0 block w-full h-0 transition-all bg-indigo-600 opacity-100 group-hover:h-full top-1/2 group-hover:top-0 duration-400 ease"></span>
@@ -69,12 +161,12 @@ export function SelectorMenu({ onPayloadChange }) {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                         </svg>
                     </span>
-                    <span className="relative pl-3">User Generators</span>
+                    <span className="relative">User Generators</span>
                 </button>
                 <button
-                    className={`relative inline-flex items-center px-12 py-3 overflow-hidden text-lg font-medium 
+                    className={`relative inline-flex items-center justify-center px-6 py-3 overflow-hidden text-lg font-medium 
               text-indigo-600 border-2 border-indigo-600 rounded-full hover:text-white group 
-              hover:bg-gray-50 ${activeTab === 'Ai_gens' ? 'font-bold  mx-2' : 'mx-3'}`}
+              hover:bg-gray-50 ${activeTab === 'Ai_gens' ? 'font-bold' : ''} mx-2`}
                     onClick={() => handleTabClick('Ai_gens')}
                 >
                     <span className="absolute left-0 block w-full h-0 transition-all bg-indigo-600 opacity-100 group-hover:h-full top-1/2 group-hover:top-0 duration-400 ease"></span>
@@ -83,7 +175,7 @@ export function SelectorMenu({ onPayloadChange }) {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                         </svg>
                     </span>
-                    <span className="relative pl-5">AI Generators</span>
+                    <span className="relative">AI Generators</span>
                 </button>
             </div>
 
@@ -139,16 +231,86 @@ export function SelectorMenu({ onPayloadChange }) {
                 )}
 
                 {activeTab === 'Ai_gens' && (
-                    <div id="Ai_gens ">
-                        <h1 className="editor-title">Hello AI Gens</h1>
+                    <div id="Ai_gens" className="p-4">
+                        <h1 className="editor-title mb-4">AI-Powered Test Case Generator</h1>
+                        <div className="mb-4">
+                            <label htmlFor="ai-prompt" className="block mb-2 text-gray-300">
+                                Describe the test cases you want to generate:
+                            </label>
+                            <textarea
+                                id="ai-prompt"
+                                value={aiPrompt}
+                                onChange={handleAiPromptChange}
+                                className="border p-2 rounded-lg w-full h-24 bg-gray-700 text-gray-300"
+                                placeholder="E.g., Generate test cases for a sorting algorithm with arrays of varying sizes and elements"
+                            />
+                        </div>
+                        <div className="flex space-x-2">
+                            <button
+                                onClick={generateAiTestCases}
+                                className={`px-4 py-2 text-sm font-medium rounded-md 
+                                text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500
+                                ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                disabled={isGenerating}
+                            >
+                                {isGenerating ? 'Generating...' : 'Generate Tests'}
+                            </button>
+                            {aiGeneratedCode && (
+                                <>
+                                    <button
+                                        onClick={handleDownloadCode}
+                                        className="px-4 py-2 text-sm font-medium rounded-md 
+                                        text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                                    >
+                                        Download Code
+                                    </button>
+                                    <button
+                                        onClick={handlePreviewCode}
+                                        className="px-4 py-2 text-sm font-medium rounded-md 
+                                        text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                    >
+                                        Preview Code
+                                    </button>
+                                </>
+                            )}
+                        </div>
                     </div>
                 )}
             </div>
+
+            {/* Preview Modal */}
+            {showPreview && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+                    <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-gray-800">
+                        <div className="mt-3 text-center">
+                            <h3 className="text-lg leading-6 font-medium text-gray-300">Generated Test Case Code</h3>
+                            <div className="mt-2 px-7 py-3">
+                                <pre className="bg-gray-900 p-4 rounded-lg overflow-x-auto text-gray-300 text-left">
+                                    {displayCode()}
+                                </pre>
+                            </div>
+                            <div className="items-center px-4 py-3 space-x-2">
+                                <button
+                                    onClick={closePreview}
+                                    className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                >
+                                    Close
+                                </button>
+                                <button
+                                    onClick={handleCopyCode}
+                                    className="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                >
+                                    Copy Code
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
 
-// Add prop types validation
 SelectorMenu.propTypes = {
-    onPayloadChange: PropTypes.func.isRequired, // Validate onPayloadChange as a required function
+    onPayloadChange: PropTypes.func.isRequired, 
 };
