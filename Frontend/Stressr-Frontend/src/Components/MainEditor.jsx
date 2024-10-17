@@ -6,18 +6,31 @@ import { languageTemplates } from './AvailableStuff';
 import { toast } from 'react-hot-toast';
 import { SelectorMenu } from './TestGeneratorSelector'; 
 import HashLoader from "react-spinners/HashLoader";
+import { FaCopy } from 'react-icons/fa';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 const MainEditor = () => {
   const [code1, setCode1] = useState(languageTemplates.python);
-  const [code2, setCode2] = useState(languageTemplates.python);
+  const [code2, setCode2] = useState(languageTemplates.cpp);
   const [language1, setLanguage1] = useState('python');
-  const [language2, setLanguage2] = useState('python');
+  const [language2, setLanguage2] = useState('cpp');
   const [isSending, setIsSending] = useState(false);
   const [testCasePayload, setTestCasePayload] = useState({
     generator_id: null,
     params: '',
   });
-  const [differences, setDifferences] = useState([]);
+  const [differences, setDifferences] = useState([
+    // {
+    //   output_code1: "10",
+    //   output_code2: "15",
+    //   test_case: "input = [1, 2, 3, 4]"
+    // },
+    // {
+    //   output_code1: "Error: Division by zero",
+    //   output_code2: "Infinity",
+    //   test_case: "input = [5, 0]"
+    // }
+  ]);
 
   const loaderRef = useRef(null);
 
@@ -102,9 +115,18 @@ const MainEditor = () => {
     }
   };
 
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      toast.success('Copied to clipboard!');
+    }).catch((err) => {
+      console.error('Failed to copy: ', err);
+      toast.error('Failed to copy');
+    });
+  };
+
   return (
-    <>
-      <div className="relative">
+    <Scrollbars style={{ width: '100%', height: '100vh' }}>
+      <div className="relative p-4">
         <div className={`${isSending ? 'opacity-50 pointer-events-none' : ''}`}>
           <div className="main-editor-container">
             <div className="editor-container">
@@ -166,26 +188,26 @@ const MainEditor = () => {
             </div>
           </div>
           <div className="flex flex-col">
-          <div className="mt-4 w-full">
-            <SelectorMenu onPayloadChange={handleTestCasePayload} />
-          </div>
+            <div className="mt-4 w-full">
+              <SelectorMenu onPayloadChange={handleTestCasePayload} />
+            </div>
 
-          <div className="mt-8 flex justify-center">
-            <button
-              onClick={handleSendRequest}
-              className={`relative inline-block text-lg px-5 py-3 font-medium leading-tight text-white transition-colors duration-300 ease-out border-2 border-gray-900 rounded-lg overflow-hidden group disabled:opacity-50 ${isSending ? 'cursor-not-allowed' : ''}`}
-              disabled={isSending}
-            >
-              <span className="absolute inset-0 w-full h-full bg-gray-50 rounded-lg"></span>
-              <span className="absolute left-0 w-48 h-48 -ml-2 transition-all duration-300 origin-top-right -rotate-90 -translate-x-full translate-y-12 bg-gray-900 group-hover:-rotate-180 ease"></span>
+            <div className="mt-8 flex justify-center">
+              <button
+                onClick={handleSendRequest}
+                className={`relative inline-block text-lg px-5 py-3 font-medium leading-tight text-white transition-colors duration-300 ease-out border-2 border-gray-900 rounded-lg overflow-hidden group disabled:opacity-50 ${isSending ? 'cursor-not-allowed' : ''}`}
+                disabled={isSending}
+              >
+                <span className="absolute inset-0 w-full h-full bg-gray-50 rounded-lg"></span>
+                <span className="absolute left-0 w-48 h-48 -ml-2 transition-all duration-300 origin-top-right -rotate-90 -translate-x-full translate-y-12 bg-gray-900 group-hover:-rotate-180 ease"></span>
 
-              <span className="relative z-10 text-gray-800 group-hover:text-white ">
-                {isSending ? 'Generating...' : 'Generate Tests'}
-              </span>
+                <span className="relative z-10 text-gray-800 group-hover:text-white ">
+                  {isSending ? 'Generating...' : 'Generate Tests'}
+                </span>
 
-              <span className="absolute bottom-0 right-0 w-full h-12 -mb-1 -mr-1 transition-all duration-200 ease-linear color-white rounded-lg group-hover:mb-0 group-hover:mr-0"></span>
-            </button>
-          </div>
+                <span className="absolute bottom-0 right-0 w-full h-12 -mb-1 -mr-1 transition-all duration-200 ease-linear color-white rounded-lg group-hover:mb-0 group-hover:mr-0"></span>
+              </button>
+            </div>
           </div>
 
           {!isSending && differences && differences.length > 0 && (
@@ -209,8 +231,16 @@ const MainEditor = () => {
                       </div>
                     </div>
                     <div className="mt-4">
-                      <h4 className="text-lg font-medium text-gray-300">Test Case</h4>
-                      <pre className="bg-gray-900 p-3 rounded text-sm text-gray-300 overflow-x-auto">
+                      <div className="flex justify-between items-center">
+                        <h4 className="text-lg font-medium text-gray-300">Test Case</h4>
+                        <button
+                          onClick={() => copyToClipboard(difference.test_case)}
+                          className="flex items-center bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded"
+                        >
+                          <FaCopy className="mr-2" /> Copy
+                        </button>
+                      </div>
+                      <pre className="bg-gray-900 p-3 rounded text-sm text-gray-300 overflow-x-auto mt-2">
                         {difference.test_case}
                       </pre>
                     </div>
@@ -228,7 +258,7 @@ const MainEditor = () => {
           </div>
         )}
       </div>
-    </>
+    </Scrollbars>
   );
 };
 

@@ -49,7 +49,7 @@ export function SelectorMenu({ onPayloadChange }) {
         }
 
         setIsGenerating(true);
-        setAiGeneratedCode(''); // Clear previous code
+        setAiGeneratedCode(''); 
 
         try {
             const response = await axios.post('http://localhost:9563/ai-generate', { prompt: aiPrompt });
@@ -88,7 +88,7 @@ export function SelectorMenu({ onPayloadChange }) {
         const a = document.createElement('a');
         a.style.display = 'none';
         a.href = url;
-        a.download = 'Stressr.py';  // Changed the file name to Stressr.py
+        a.download = 'Stressr.py'; 
 
         document.body.appendChild(a);
         a.click();
@@ -277,8 +277,6 @@ export function SelectorMenu({ onPayloadChange }) {
                     </div>
                 )}
             </div>
-
-            {/* Preview Modal */}
             {showPreview && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
                     <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-gray-800">

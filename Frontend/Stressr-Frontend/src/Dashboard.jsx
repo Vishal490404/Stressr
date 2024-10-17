@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 import { toast } from 'react-hot-toast';
 import HashLoader from 'react-spinners/HashLoader';
@@ -76,24 +76,12 @@ const Dashboard = () => {
                         </h1>
                         <ul className="flex space-x-6 text-white items-center">
                             <li>
-                                <a href="#code" className="cursor-pointer">
-                                    Code
-                                </a>
+                                <Link to="/about" className="hover:text-gray-300 transition-colors duration-200">
+                                    User Guide
+                                </Link>
                             </li>
-                            <li>
-                                <a href="#test-case-generator" className="cursor-pointer">
-                                    Test Case Generator
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#result" className="cursor-pointer">
-                                    Result
-                                </a>
-                            </li>
-                        </ul>
-                        <ul className="flex space-x-6 text-white items-center">
                             {!isLoggedIn ? (
-                                <li><a href="/login" className="cursor-pointer">Login</a></li>
+                                <li><Link to="/login" className="hover:text-gray-300 transition-colors duration-200">Login</Link></li>
                             ) : (
                                 <li>
                                     {profileImage && (

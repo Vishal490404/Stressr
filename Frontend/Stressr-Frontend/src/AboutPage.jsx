@@ -4,6 +4,7 @@ import HashLoader from "react-spinners/HashLoader";
 import Faq from "react-faq-component";
 import "./AboutPage.css";
 import { Scrollbars } from "react-custom-scrollbars";
+import { motion } from "framer-motion";
 
 const data = {
   title: <> FAQ&apos;s (Frequently Asked Questions) </>,
@@ -65,13 +66,44 @@ const data = {
       title: <> What happens if my solution gives the wrong answer on some test cases?</>,
       content: `If your solution produces a wrong answer, the platform will highlight the specific test case where the difference occurs, along with the expected correct output, so you can debug the issue.`,
     },
+    {
+      title: <> How do I use Stressr?</>,
+      content: `Stressr is designed to be intuitive and easy to use. Here's a quick guide:
+
+1. Log in or create an account
+2. Navigate to the Dashboard
+3. Create a new stress test by clicking the "New Test" button
+4. Enter your solution code and the brute force code (if applicable)
+5. Set the test parameters (number of test cases, input ranges, etc.)
+6. Click "Run Test" to start the stress testing process
+7. Review the results, including any differences found between your solution and the brute force method
+
+For a more detailed walkthrough, check out our User Guide section below.`,
+    },
   ],
+};
+
+const styles = {
+  bgColor: 'transparent',
+  titleTextColor: "#ffffff",
+  rowTitleColor: "#ffffff",
+  rowContentColor: '#ffffff',
+  arrowColor: "#ffffff",
+};
+
+const config = {
+  animate: true,
+  // arrowIcon: "+",
+  expandIcon: "+",
+  collapseIcon: "-",
+  tabFocus: true
 };
 
 const AboutPage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [expandedIndex, setExpandedIndex] = useState(null);
 
   const getCookie = (cookieName) => {
     const name = cookieName + "=";
@@ -84,26 +116,6 @@ const AboutPage = () => {
       }
     }
     return null;
-  };
-
-  const config = {
-    animate: true,
-    arrowIcon: "V",
-    expandIcon: "+",
-    collapseIcon: "-",
-  };
-
-  const styles = {
-    bgColor: "#1c1c1c",
-    titleTextColor: "white",
-    rowTitleColor: "white",
-    rowContentColor: "white",
-    arrowColor: "white",
-
-    rowTitleTextSize: "20px",
-    rowContentTextSize: "16px",
-    rowTitleBorderRadius: "5px",
-    rowContentBorderRadius: "5px",
   };
 
   useEffect(() => {
@@ -126,6 +138,39 @@ const AboutPage = () => {
 
     return () => clearTimeout(timer);
   }, []);
+
+  const userGuideSteps = [
+    {
+      title: "Step 1: Log in or Sign up",
+      description: "Create an account or log in to access all features of Stressr.",
+      image: "/path/to/login-screenshot.png"
+    },
+    {
+      title: "Step 2: Create a New Test",
+      description: "From your dashboard, click on 'New Test' to start a new stress testing session.",
+      image: "/path/to/new-test-screenshot.png"
+    },
+    {
+      title: "Step 3: Enter Your Code",
+      description: "Paste your solution code and, if applicable, the brute force code into the provided editors.",
+      image: "/path/to/code-entry-screenshot.png"
+    },
+    {
+      title: "Step 4: Set Test Parameters",
+      description: "Configure the test settings, such as the number of test cases and input ranges.",
+      image: "/path/to/test-params-screenshot.png"
+    },
+    {
+      title: "Step 5: Run the Test",
+      description: "Click 'Run Test' to start the stress testing process and wait for the results.",
+      image: "/path/to/run-test-screenshot.png"
+    },
+    {
+      title: "Step 6: Review Results",
+      description: "Analyze the test results, including any differences found between your solution and the brute force method.",
+      image: "/path/to/results-screenshot.png"
+    }
+  ];
 
   return (
     <>
@@ -171,9 +216,46 @@ const AboutPage = () => {
               style={{ width: "100%", height: "calc(100vh)" }}
               className="scrollbar-container"
             >
-              <div className="faq-container flex items-center justify-center">
-                <Faq data={data} styles={styles} config={config} />
-              </div>
+              <motion.div 
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="faq-container flex items-center justify-center mb-16"
+              >
+                <Faq 
+                  data={data} 
+                  styles={styles} 
+                  config={config}
+                  getRowOptions={() => ({
+                    onClick: (e, row, toggleExpand) => {
+                      toggleExpand();
+                      setExpandedIndex(expandedIndex === row.index ? null : row.index);
+                    },
+                  })}
+                />
+              </motion.div>
+              
+              <motion.div 
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="user-guide-container max-w-4xl mx-auto px-4 py-8 bg-transparent rounded-lg"
+              >
+                <h2 className="text-3xl font-bold text-white mb-8 text-center">User Guide</h2>
+                {userGuideSteps.map((step, index) => (
+                  <motion.div 
+                    key={index}
+                    initial={{ opacity: 0, x: -50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="mb-12 bg-gray-800 bg-opacity-50 rounded-lg p-6"
+                  >
+                    <h3 className="text-2xl font-semibold text-white mb-4">{step.title}</h3>
+                    <p className="text-gray-300 mb-4">{step.description}</p>
+                    <img src={step.image} alt={step.title} className="w-full rounded-lg shadow-md" />
+                  </motion.div>
+                ))}
+              </motion.div>
             </Scrollbars>
           </>
         )}
