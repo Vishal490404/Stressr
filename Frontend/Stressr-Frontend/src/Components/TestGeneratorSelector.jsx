@@ -3,24 +3,35 @@ import InputParameters from './InputParameters';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+// import { motion, AnimatePresence } from 'framer-motion';
 
 export function SelectorMenu({ onPayloadChange }) { 
     const [activeTab, setActiveTab] = useState('Trivial_gens');
     const [selectedGenerator, setSelectedGenerator] = useState('Generator 1');
     const [uploadedFile, setUploadedFile] = useState(null);
+    const [fileContent, setFileContent] = useState('');
     const [stdinInput, setStdinInput] = useState('');
     const [inputParameters, setInputParameters] = useState({});
     const [aiPrompt, setAiPrompt] = useState('');
     const [aiGeneratedCode, setAiGeneratedCode] = useState('');
     const [isGenerating, setIsGenerating] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
+    // const [showTooltip, setShowTooltip] = useState(false);
 
     const handleTabClick = (tabId) => {
         setActiveTab(tabId);
     };
 
     const handleFileUpload = (e) => {
-        setUploadedFile(e.target.files[0]);
+        const file = e.target.files[0];
+        if (file) {
+            setUploadedFile(file);
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setFileContent(e.target.result);
+            };
+            reader.readAsText(file);
+        }
     };
 
     const handleStdinChange = (e) => {
@@ -69,6 +80,60 @@ export function SelectorMenu({ onPayloadChange }) {
             setIsGenerating(false);
         }
     };
+
+    const getFileExtension = (filename) => {
+        return filename.slice((filename.lastIndexOf(".") - 1 >>> 0) + 2);
+    };
+
+    const createUserGeneratorPayload = () => {
+        if (!uploadedFile) {
+            toast.error('Please upload a file');
+            return;
+        }
+
+        const fileExtension = getFileExtension(uploadedFile.name).toLowerCase();
+        let language;
+
+        switch (fileExtension) {
+            case 'py':
+                language = 'python';
+                break;
+            case 'js':
+                language = 'javascript';
+                break;
+            case 'java':
+                language = 'java';
+                break;
+            case 'cpp':
+            case 'cc':
+                language = 'cpp';
+                break;
+            case 'c':
+                language = 'c';
+                break;
+            default:
+                toast.error('Unsupported file type');
+                return;
+        }
+
+        const payload = {
+            generator_id: 'user_generator',
+            params: {
+                language: language,
+                code: fileContent,
+                stdin: stdinInput
+            }
+        };
+
+        onPayloadChange(payload);
+        toast.success('User generator payload created');
+    };
+
+    useEffect(() => {
+        if (activeTab === 'User_gens' && uploadedFile && fileContent) {
+            createUserGeneratorPayload();
+        }
+    }, [uploadedFile, fileContent, stdinInput, activeTab]);
 
     useEffect(() => {
         // console.log(inputParameters);
@@ -211,6 +276,7 @@ export function SelectorMenu({ onPayloadChange }) {
                                 type="file"
                                 onChange={handleFileUpload}
                                 className="border p-2 rounded-lg bg-gray-700 text-gray-300"
+                                accept=".py,.js,.java,.cpp,.cc,.c"
                             />
                             {uploadedFile && (
                                 <p className="mt-4 text-gray-300">File uploaded: {uploadedFile.name}</p>

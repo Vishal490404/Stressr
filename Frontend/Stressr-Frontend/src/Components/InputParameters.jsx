@@ -10,8 +10,22 @@ const InputParameters = ({ selectedGenerator, setInputParameters }) => {
     const [arraySizeMax, setArraySizeMax] = useState('');
     const [arrayElemMin, setArrayElemMin] = useState('');
     const [arrayElemMax, setArrayElemMax] = useState('');
+    const [errors, setErrors] = useState({});
 
-    const isValid = (value) => !isNaN(value) && value !== '';
+    const isValid = (value) => {
+        if (value === '') return true;
+        const num = Number(value);
+        return !isNaN(num) && Number.isInteger(num) && num >= 0;
+    };
+
+    const validateInput = (value, setter, name) => {
+        if (isValid(value)) {
+            setter(value);
+            setErrors(prev => ({ ...prev, [name]: '' }));
+        } else {
+            setErrors(prev => ({ ...prev, [name]: 'Please enter a non-negative integer' }));
+        }
+    };
 
     useEffect(() => {
         let params = {};
@@ -37,19 +51,18 @@ const InputParameters = ({ selectedGenerator, setInputParameters }) => {
                 break;
         }
         setInputParameters(params);
-        // console.log(params);
     }, [selectedGenerator, minN, maxN, minN2, maxN2, arraySizeMin, arraySizeMax, arrayElemMin, arrayElemMax, setInputParameters]);
 
-    const renderInputField = (label, value, setValue) => (
+    const renderInputField = (label, value, setValue, name) => (
         <div className="relative">
             <label className="block mb-2 text-white">{label}</label>
             <input
                 type="text"
                 value={value}
-                onChange={(e) => setValue(e.target.value)}
-                className={`border p-2 rounded-lg bg-gray-700 text-white ${isValid(value) ? '' : 'border-red-500'}`}
+                onChange={(e) => validateInput(e.target.value, setValue, name)}
+                className={`border p-2 rounded-lg bg-gray-700 text-white ${errors[name] ? 'border-red-500' : ''}`}
             />
-            {!isValid(value) && value !== '' && <span className="absolute text-red-500 text-xs top-1 right-1">Invalid input</span>}
+            {errors[name] && <span className="absolute text-red-500 text-xs top-full left-0">{errors[name]}</span>}
         </div>
     );
 
@@ -57,24 +70,24 @@ const InputParameters = ({ selectedGenerator, setInputParameters }) => {
         <div className="h-full w-full">
             {['1', '2'].includes(selectedGenerator) && (
                 <div className="flex flex-row mt-20 justify-evenly">
-                    {renderInputField("Min Value:", minN, setMinN)}
-                    {renderInputField("Max Value:", maxN, setMaxN)}
+                    {renderInputField("Min Value:", minN, setMinN, "minN")}
+                    {renderInputField("Max Value:", maxN, setMaxN, "maxN")}
                 </div>
             )}
             {['3', '4'].includes(selectedGenerator) && (
                 <div className="flex flex-row mt-20 justify-evenly">
-                    {renderInputField("First Number Min Value:", minN, setMinN)}
-                    {renderInputField("First Number Max Value:", maxN, setMaxN)}
-                    {renderInputField("Second Number Min Value:", minN2, setMinN2)}
-                    {renderInputField("Second Number Max Value:", maxN2, setMaxN2)}
+                    {renderInputField("First Number Min Value:", minN, setMinN, "minN")}
+                    {renderInputField("First Number Max Value:", maxN, setMaxN, "maxN")}
+                    {renderInputField("Second Number Min Value:", minN2, setMinN2, "minN2")}
+                    {renderInputField("Second Number Max Value:", maxN2, setMaxN2, "maxN2")}
                 </div>
             )}
             {['5', '6'].includes(selectedGenerator) && (
                 <div className="flex flex-row mt-20 justify-evenly">
-                    {renderInputField("Array Size Min:", arraySizeMin, setArraySizeMin)}
-                    {renderInputField("Array Size Max:", arraySizeMax, setArraySizeMax)}
-                    {renderInputField("Array Element Min:", arrayElemMin, setArrayElemMin)}
-                    {renderInputField("Array Element Max:", arrayElemMax, setArrayElemMax)}
+                    {renderInputField("Array Size Min:", arraySizeMin, setArraySizeMin, "arraySizeMin")}
+                    {renderInputField("Array Size Max:", arraySizeMax, setArraySizeMax, "arraySizeMax")}
+                    {renderInputField("Array Element Min:", arrayElemMin, setArrayElemMin, "arrayElemMin")}
+                    {renderInputField("Array Element Max:", arrayElemMax, setArrayElemMax, "arrayElemMax")}
                 </div>
             )}
         </div>

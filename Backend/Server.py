@@ -11,7 +11,6 @@ load_dotenv()
 app = Quart(__name__)
 app = cors(app)
 
-# Configure the Gemini AI
 genai.configure(api_key=os.getenv('GOOGLE_AI_API_KEY'))
 model = genai.GenerativeModel('gemini-pro')
 
@@ -124,21 +123,17 @@ async def handle_ai_generation():
         response = model.generate_content(full_prompt)
         generated_code = response.text
 
-        # Basic validation to ensure we got a Python function
         if "def generate_test_cases" not in generated_code:
             return jsonify({"error": "Failed to generate valid test case function"}), 500
 
-        # Store the generated code in MongoDB
         db_url = os.getenv('DB_URL_FOR_GENERATORS')
         cluster = MongoClient(db_url)
         db = cluster['python_generators']
         collection = db['generators']
 
-        # Get the next available ID
         last_document = collection.find_one(sort=[("_id", -1)])
         new_id = 1 if last_document is None else last_document["_id"] + 1
 
-        # Insert the new generator
         generator_document = {
             "_id": new_id,
             "gen": generated_code,
