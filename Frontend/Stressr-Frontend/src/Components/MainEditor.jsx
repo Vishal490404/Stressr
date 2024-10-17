@@ -54,7 +54,7 @@ const MainEditor = () => {
     setIsSending(true);
     const payload = {
       test_generation_option: {
-        generator_id: testCasePayload.generator_id, 
+        generator_id: parseInt(testCasePayload.generator_id, 10),
         params: testCasePayload.params
       },
       code1_payload: {
