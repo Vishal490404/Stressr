@@ -202,7 +202,7 @@ export function SelectorMenu({ onPayloadChange }) {
             <div className="col-span-1 flex flex-col justify-evenly h-full bg-white bg-opacity-20 backdrop-blur-sm border rounded-xl editor-container mr-3">
                 <button
                     className={`relative inline-flex items-center justify-center px-6 py-3 overflow-hidden text-lg font-medium 
-              text-indigo-600 border-2 border-indigo-600 rounded-full hover:text-white group 
+              text-white border-2 border-white rounded-full hover:text-white group 
               hover:bg-gray-50 ${activeTab === 'Trivial_gens' ? 'font-bold' : ''} mx-2`}
                     onClick={() => handleTabClick('Trivial_gens')}
                 >
@@ -216,7 +216,7 @@ export function SelectorMenu({ onPayloadChange }) {
                 </button>
                 <button
                     className={`relative inline-flex items-center justify-center px-6 py-3 overflow-hidden text-lg font-medium 
-              text-indigo-600 border-2 border-indigo-600 rounded-full hover:text-white group 
+              text-white border-2 border-white rounded-full hover:text-white group 
               hover:bg-gray-50 ${activeTab === 'User_gens' ? 'font-bold' : ''} mx-2`}
                     onClick={() => handleTabClick('User_gens')}
                 >
@@ -230,7 +230,7 @@ export function SelectorMenu({ onPayloadChange }) {
                 </button>
                 <button
                     className={`relative inline-flex items-center justify-center px-6 py-3 overflow-hidden text-lg font-medium 
-              text-indigo-600 border-2 border-indigo-600 rounded-full hover:text-white group 
+              text-white border-2 border-white rounded-full hover:text-white group 
               hover:bg-gray-50 ${activeTab === 'Ai_gens' ? 'font-bold' : ''} mx-2`}
                     onClick={() => handleTabClick('Ai_gens')}
                 >
