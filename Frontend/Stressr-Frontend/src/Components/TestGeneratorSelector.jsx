@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import InputParameters from './InputParameters';
+import PropTypes from 'prop-types';
 
-export function SelectorMenu({ onPayloadChange }) { // Accept onPayloadChange as prop
+export function SelectorMenu({ onPayloadChange }) { 
     const [activeTab, setActiveTab] = useState('Trivial_gens');
     const [selectedGenerator, setSelectedGenerator] = useState('Generator 1');
     const [uploadedFile, setUploadedFile] = useState(null);
     const [stdinInput, setStdinInput] = useState('');
+    const [inputParameters, setInputParameters] = useState({});
 
     const handleTabClick = (tabId) => {
         setActiveTab(tabId);
@@ -21,15 +23,23 @@ export function SelectorMenu({ onPayloadChange }) { // Accept onPayloadChange as
 
     const handleGeneratorChange = (e) => {
         const newGenerator = e.target.value;
+        // console.log(newGenerator);
         setSelectedGenerator(newGenerator);
-
-        // Call the onPayloadChange prop to pass data to the parent (MainEditor)
+        // console.log(inputParameters);
         onPayloadChange({
             generator_id: newGenerator,
-            params: '' // Add logic for params if necessary
+            params: ''
         });
     };
 
+    useEffect(() => {
+        // console.log(inputParameters);
+        onPayloadChange({
+            generator_id: selectedGenerator,
+            params: inputParameters
+        });
+    }, [inputParameters, selectedGenerator]);
+    
     return (
         <div className="ml-0 mt-0 w-full h-80 grid grid-cols-5 px-8">
             <div className="col-span-1 flex flex-col justify-evenly h-full  bg-white bg-opacity-20 backdrop-blur-sm border rounded-xl editor-container  mr-3 ">
@@ -45,7 +55,7 @@ export function SelectorMenu({ onPayloadChange }) { // Accept onPayloadChange as
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                         </svg>
                     </span>
-                    <span className="relative">Trivial Gens</span>
+                    <span className="relative">Pre-Defined Generators</span>
                 </button>
                 <button
                     className={`relative inline-flex items-center px-12 py-3 overflow-hidden text-lg font-medium 
@@ -59,7 +69,7 @@ export function SelectorMenu({ onPayloadChange }) { // Accept onPayloadChange as
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                         </svg>
                     </span>
-                    <span className="relative pl-3">User Gens</span>
+                    <span className="relative pl-3">User Generators</span>
                 </button>
                 <button
                     className={`relative inline-flex items-center px-12 py-3 overflow-hidden text-lg font-medium 
@@ -73,7 +83,7 @@ export function SelectorMenu({ onPayloadChange }) { // Accept onPayloadChange as
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                         </svg>
                     </span>
-                    <span className="relative pl-5">AI Gens</span>
+                    <span className="relative pl-5">AI Generators</span>
                 </button>
             </div>
 
@@ -85,7 +95,7 @@ export function SelectorMenu({ onPayloadChange }) { // Accept onPayloadChange as
                         <div className="flex justify-center mt-2">
                             <select
                                 value={selectedGenerator}
-                                onChange={handleGeneratorChange} // Call handleGeneratorChange instead
+                                onChange={handleGeneratorChange}
                                 className="border p-2 rounded-lg w-1/2 bg-gray-700 text-gray-300"
                             >
                                 <option value="0" className="bg-gray-700 text-gray-300">Select a generator</option>
@@ -97,7 +107,7 @@ export function SelectorMenu({ onPayloadChange }) { // Accept onPayloadChange as
                                 <option value="6" className="bg-gray-700 text-gray-300">Array Generator</option>
                             </select>
                         </div>
-                        <InputParameters selectedGenerator={selectedGenerator} />
+                        <InputParameters selectedGenerator={selectedGenerator} setInputParameters={setInputParameters} />
                     </div>
                 )}
 
@@ -137,3 +147,8 @@ export function SelectorMenu({ onPayloadChange }) { // Accept onPayloadChange as
         </div>
     );
 }
+
+// Add prop types validation
+SelectorMenu.propTypes = {
+    onPayloadChange: PropTypes.func.isRequired, // Validate onPayloadChange as a required function
+};

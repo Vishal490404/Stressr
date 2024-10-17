@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
-const InputParameters = ({ selectedGenerator }) => {
+const InputParameters = ({ selectedGenerator, setInputParameters }) => {
     const [minN, setMinN] = useState('');
     const [maxN, setMaxN] = useState('');
     const [minN2, setMinN2] = useState('');
@@ -10,255 +11,79 @@ const InputParameters = ({ selectedGenerator }) => {
     const [arrayElemMin, setArrayElemMin] = useState('');
     const [arrayElemMax, setArrayElemMax] = useState('');
 
-    const isMinNValid = !isNaN(minN);
-    const isMaxNValid = !isNaN(maxN);
-    const isMinN2Valid = !isNaN(minN2);
-    const isMaxN2Valid = !isNaN(maxN2);
-    const isArraySizeMinValid = !isNaN(arraySizeMin);
-    const isArraySizeMaxValid = !isNaN(arraySizeMax);
-    const isArrayElemMinValid = !isNaN(arrayElemMin);
-    const isArrayElemMaxValid = !isNaN(arrayElemMax);
+    const isValid = (value) => !isNaN(value) && value !== '';
+
+    useEffect(() => {
+        let params = {};
+        switch (selectedGenerator) {
+            case '1':
+            case '2':
+                params = { min: minN, max: maxN };
+                break;
+            case '3':
+            case '4':
+                params = { min1: minN, max1: maxN, min2: minN2, max2: maxN2 };
+                break;
+            case '5':
+            case '6':
+                params = { 
+                    size_min: arraySizeMin, 
+                    size_max: arraySizeMax, 
+                    elem_min: arrayElemMin, 
+                    elem_max: arrayElemMax 
+                };
+                break;
+            default:
+                break;
+        }
+        setInputParameters(params);
+        // console.log(params);
+    }, [selectedGenerator, minN, maxN, minN2, maxN2, arraySizeMin, arraySizeMax, arrayElemMin, arrayElemMax, setInputParameters]);
+
+    const renderInputField = (label, value, setValue) => (
+        <div className="relative">
+            <label className="block mb-2 text-white">{label}</label>
+            <input
+                type="text"
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                className={`border p-2 rounded-lg bg-gray-700 text-white ${isValid(value) ? '' : 'border-red-500'}`}
+            />
+            {!isValid(value) && value !== '' && <span className="absolute text-red-500 text-xs top-1 right-1">Invalid input</span>}
+        </div>
+    );
 
     return (
         <div className="h-full w-full">
-            {selectedGenerator === '1' && (
-                <div>
-                    <div className="flex flex-row mt-20 justify-evenly">
-                        <div className="">
-                            <label className="block mb-2">Min Value:</label>
-                            <input
-                                type="text"
-                                value={minN}
-                                onChange={(e) => setMinN(e.target.value)}
-                                className={`border p-2 rounded-lg ${isMinNValid ? '' : 'border-red-500'}`}
-                            />
-                            {!isMinNValid && <span className="absolute text-red-500 text-xs top-1 right-1">Invalid input</span>}
-                        </div>
-                        <div className="">
-                            <label className="block mb-2">Max Value:</label>
-                            <input
-                                type="text"
-                                value={maxN}
-                                onChange={(e) => setMaxN(e.target.value)}
-                                className={`border p-2 rounded-lg ${isMaxNValid ? '' : 'border-red-500'}`}
-                            />
-                            {!isMaxNValid && <span className="absolute text-red-500 text-xs top-1 right-1">Invalid input</span>}
-                        </div>
-                    </div>
+            {['1', '2'].includes(selectedGenerator) && (
+                <div className="flex flex-row mt-20 justify-evenly">
+                    {renderInputField("Min Value:", minN, setMinN)}
+                    {renderInputField("Max Value:", maxN, setMaxN)}
                 </div>
             )}
-            {selectedGenerator === '2' && (
-                <div>
-                    <div className="flex flex-row mt-20 justify-evenly">
-                        <div className="relative">
-                            <label className="block mb-2">Min Value:</label>
-                            <input
-                                type="text"
-                                value={minN}
-                                onChange={(e) => setMinN(e.target.value)}
-                                className={`border p-2 rounded-lg ${isMinNValid ? '' : 'border-red-500'}`}
-                            />
-                            {!isMinNValid && <span className="absolute text-red-500 text-xs top-1 right-1">Invalid input</span>}
-                        </div>
-                        <div className="relative">
-                            <label className="block mb-2">Max Value:</label>
-                            <input
-                                type="text"
-                                value={maxN}
-                                onChange={(e) => setMaxN(e.target.value)}
-                                className={`border p-2 rounded-lg ${isMaxNValid ? '' : 'border-red-500'}`}
-                            />
-                            {!isMaxNValid && <span className="absolute text-red-500 text-xs top-1 right-1">Invalid input</span>}
-                        </div>
-                    </div>
+            {['3', '4'].includes(selectedGenerator) && (
+                <div className="flex flex-row mt-20 justify-evenly">
+                    {renderInputField("First Number Min Value:", minN, setMinN)}
+                    {renderInputField("First Number Max Value:", maxN, setMaxN)}
+                    {renderInputField("Second Number Min Value:", minN2, setMinN2)}
+                    {renderInputField("Second Number Max Value:", maxN2, setMaxN2)}
                 </div>
             )}
-            {selectedGenerator === '3' && (
-                <div>
-                    <div className="flex flex-row mt-20 justify-evenly">
-                        <div className="">
-                            <label className="block mb-2">First Number Min Value:</label>
-                            <input
-                                type="text"
-                                value={minN}
-                                onChange={(e) => setMinN(e.target.value)}
-                                className={`border p-2 rounded-lg ${isMinNValid ? '' : 'border-red-500'}`}
-                            />
-                            {!isMinNValid && <span className="absolute text-red-500 text-xs top-1 right-1">Invalid input</span>}
-                        </div>
-                        <div className="">
-                            <label className="block mb-2">First Number Max Value:</label>
-                            <input
-                                type="text"
-                                value={maxN}
-                                onChange={(e) => setMaxN(e.target.value)}
-                                className={`border p-2 rounded-lg ${isMaxNValid ? '' : 'border-red-500'}`}
-                            />
-                            {!isMaxNValid && <span className="absolute text-red-500 text-xs top-1 right-1">Invalid input</span>}
-                        </div>
-                        <div className="">
-                            <label className="block mb-2">Second Number Min Value:</label>
-                            <input
-                                type="text"
-                                value={minN2}
-                                onChange={(e) => setMinN2(e.target.value)}
-                                className={`border p-2 rounded-lg ${isMinN2Valid ? '' : 'border-red-500'}`}
-                            />
-                            {!isMinN2Valid && <span className="absolute text-red-500 text-xs top-1 right-1">Invalid input</span>}
-                        </div>
-                        <div className="">
-                            <label className="block mb-2">Second Number Max Value:</label>
-                            <input
-                                type="text"
-                                value={maxN2}
-                                onChange={(e) => setMaxN2(e.target.value)}
-                                className={`border p-2 rounded-lg ${isMaxN2Valid ? '' : 'border-red-500'}`}
-                            />
-                            {!isMaxN2Valid && <span className="absolute text-red-500 text-xs top-1 right-1">Invalid input</span>}
-                        </div>
-                    </div>
-                </div>
-            )}
-            {selectedGenerator === '4' && (
-                <div>
-                    <div className="flex flex-row mt-20 justify-evenly">
-                        <div className="relative">
-                            <label className="block mb-2">First Number Min Value:</label>
-                            <input
-                                type="text"
-                                value={minN}
-                                onChange={(e) => setMinN(e.target.value)}
-                                className={`border p-2 rounded-lg ${isMinNValid ? '' : 'border-red-500'}`}
-                            />
-                            {!isMinNValid && <span className="absolute text-red-500 text-xs top-1 right-1">Invalid input</span>}
-                        </div>
-                        <div className="relative">
-                            <label className="block mb-2">First Number Max Value:</label>
-                            <input
-                                type="text"
-                                value={maxN}
-                                onChange={(e) => setMaxN(e.target.value)}
-                                className={`border p-2 rounded-lg ${isMaxNValid ? '' : 'border-red-500'}`}
-                            />
-                            {!isMaxNValid && <span className="absolute text-red-500 text-xs top-1 right-1">Invalid input</span>}
-                        </div>
-                        <div className="relative">
-                            <label className="block mb-2">Second Number Min Value:</label>
-                            <input
-                                type="text"
-                                value={minN2}
-                                onChange={(e) => setMinN2(e.target.value)}
-                                className={`border p-2 rounded-lg ${isMinN2Valid ? '' : 'border-red-500'}`}
-                            />
-                            {!isMinN2Valid && <span className="absolute text-red-500 text-xs top-1 right-1">Invalid input</span>}
-                        </div>
-                        <div className="relative">
-                            <label className="block mb-2">Second Number Max Value:</label>
-                            <input
-                                type="text"
-                                value={maxN2}
-                                onChange={(e) => setMaxN2(e.target.value)}
-                                className={`border p-2 rounded-lg ${isMaxN2Valid ? '' : 'border-red-500'}`}
-                            />
-                            {!isMaxN2Valid && <span className="absolute text-red-500 text-xs top-1 right-1">Invalid input</span>}
-                        </div>
-                    </div>
-                </div>
-            )}
-            {selectedGenerator === '5' && (
-                <div>
-                    <div className="flex flex-row mt-20 justify-evenly">
-                        <div className="relative">
-                            <label className="block mb-2">Array Size Min:</label>
-                            <input
-                                type="text"
-                                value={arraySizeMin}
-                                onChange={(e) => setArraySizeMin(e.target.value)}
-                                className={`border p-2 rounded-lg ${isArraySizeMinValid ? '' : 'border-red-500'}`}
-                            />
-                            {!isArraySizeMinValid && <span className="absolute text-red-500 text-xs top-1 right-1">Invalid input</span>}
-                        </div>
-                        <div className="relative">
-                            <label className="block mb-2">Array Size Max:</label>
-                            <input
-                                type="text"
-                                value={arraySizeMax}
-                                onChange={(e) => setArraySizeMax(e.target.value)}
-                                className={`border p-2 rounded-lg ${isArraySizeMaxValid ? '' : 'border-red-500'}`}
-                            />
-                            {!isArraySizeMaxValid && <span className="absolute text-red-500 text-xs top-1 right-1">Invalid input</span>}
-                        </div>
-                        <div className="relative">
-                            <label className="block mb-2">Array Element Min:</label>
-                            <input
-                                type="text"
-                                value={arrayElemMin}
-                                onChange={(e) => setArrayElemMin(e.target.value)}
-                                className={`border p-2 rounded-lg ${isArrayElemMinValid ? '' : 'border-red-500'}`}
-                            />
-                            {!isArrayElemMinValid && <span className="absolute text-red-500 text-xs top-1 right-1">Invalid input</span>}
-                        </div>
-                        <div className="relative">
-                            <label className="block mb-2">Array Element Max:</label>
-                            <input
-                                type="text"
-                                value={arrayElemMax}
-                                onChange={(e) => setArrayElemMax(e.target.value)}
-                                className={`border p-2 rounded-lg ${isArrayElemMaxValid ? '' : 'border-red-500'}`}
-                            />
-                            {!isArrayElemMaxValid && <span className="absolute text-red-500 text-xs top-1 right-1">Invalid input</span>}
-                        </div>
-                    </div>
-                </div>
-            )}
-            {selectedGenerator === '6' && (
-                <div>
-                    <div className="flex flex-row mt-20 justify-evenly">
-                        <div className="relative">
-                            <label className="block mb-2">Array Size Min:</label>
-                            <input
-                                type="text"
-                                value={arraySizeMin}
-                                onChange={(e) => setArraySizeMin(e.target.value)}
-                                className={`border p-2 rounded-lg ${isArraySizeMinValid ? '' : 'border-red-500'}`}
-                            />
-                            {!isArraySizeMinValid && <span className="absolute text-red-500 text-xs top-1 right-1">Invalid input</span>}
-                        </div>
-                        <div className="relative">
-                            <label className="block mb-2">Array Size Max:</label>
-                            <input
-                                type="text"
-                                value={arraySizeMax}
-                                onChange={(e) => setArraySizeMax(e.target.value)}
-                                className={`border p-2 rounded-lg ${isArraySizeMaxValid ? '' : 'border-red-500'}`}
-                            />
-                            {!isArraySizeMaxValid && <span className="absolute text-red-500 text-xs top-1 right-1">Invalid input</span>}
-                        </div>
-                        <div className="relative">
-                            <label className="block mb-2">Array Element Min:</label>
-                            <input
-                                type="text"
-                                value={arrayElemMin}
-                                onChange={(e) => setArrayElemMin(e.target.value)}
-                                className={`border p-2 rounded-lg ${isArrayElemMinValid ? '' : 'border-red-500'}`}
-                            />
-                            {!isArrayElemMinValid && <span className="absolute text-red-500 text-xs top-1 right-1">Invalid input</span>}
-                        </div>
-                        <div className="relative">
-                            <label className="block mb-2">Array Element Max:</label>
-                            <input
-                                type="text"
-                                value={arrayElemMax}
-                                onChange={(e) => setArrayElemMax(e.target.value)}
-                                className={`border p-2 rounded-lg ${isArrayElemMaxValid ? '' : 'border-red-500'}`}
-                            />
-                            {!isArrayElemMaxValid && <span className="absolute text-red-500 text-xs top-1 right-1">Invalid input</span>}
-                        </div>
-                    </div>
+            {['5', '6'].includes(selectedGenerator) && (
+                <div className="flex flex-row mt-20 justify-evenly">
+                    {renderInputField("Array Size Min:", arraySizeMin, setArraySizeMin)}
+                    {renderInputField("Array Size Max:", arraySizeMax, setArraySizeMax)}
+                    {renderInputField("Array Element Min:", arrayElemMin, setArrayElemMin)}
+                    {renderInputField("Array Element Max:", arrayElemMax, setArrayElemMax)}
                 </div>
             )}
         </div>
     );
 };
 
-export default InputParameters
+InputParameters.propTypes = {
+    selectedGenerator: PropTypes.string.isRequired,
+    setInputParameters: PropTypes.func.isRequired,
+};
+
+export default InputParameters;

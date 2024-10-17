@@ -5,7 +5,7 @@ import { toast } from 'react-hot-toast';
 import HashLoader from 'react-spinners/HashLoader';
 import { jwtDecode } from 'jwt-decode';
 import MainEditor from './Components/MainEditor'; 
-import { SelectorMenu } from './Components/TestGeneratorSelector';
+// import { SelectorMenu } from './Components/TestGeneratorSelector';
 
 
 const Dashboard = () => {
@@ -28,7 +28,7 @@ const Dashboard = () => {
                 return cookie.substring(name.length, cookie.length);
             }
         }
-        return null;
+        return null;                                    
     };
 
     useEffect(() => {

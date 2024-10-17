@@ -16,11 +16,19 @@ const MainEditor = () => {
     generator_id: null,
     params: '',
   });
-  const [differences, setDifferences] = useState(null); // State to hold differences response
+  const [differences, setDifferences] = useState(null); 
 
   const handleTestCasePayload = (payload) => {
-    setTestCasePayload(payload);
+    const { generator_id, params } = payload;
+    // console.log(params);
+    const paramsString = Object.values(params).join(' ');
+    setTestCasePayload({ generator_id, params: paramsString });
   };
+
+  // useEffect(() => {
+  //   const formatted = JSON.stringify(testCasePayload, null, 2);
+  //   setFormattedPayload(formatted);
+  // }, [testCasePayload]);
 
   const handleLanguageChange1 = (event) => {
     const selectedLanguage = event.target.value;
@@ -46,8 +54,8 @@ const MainEditor = () => {
     setIsSending(true);
     const payload = {
       test_generation_option: {
-        generator_id: 5, 
-        params: "1 200000 1 100",
+        generator_id: testCasePayload.generator_id, 
+        params: testCasePayload.params
       },
       code1_payload: {
         language: language1,
@@ -60,6 +68,7 @@ const MainEditor = () => {
     };
 
     try {
+      console.log(payload);
       const response = await fetch('http://localhost:9563/find', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -71,7 +80,7 @@ const MainEditor = () => {
 
       if (response.ok) {
         toast.success('Request successful!');
-        setDifferences(responseData.differences || []); // Store differences response
+        setDifferences(responseData.differences || []);
       } else {
         toast.error(`Error: ${response.status}`);
         console.log(await response.text());
@@ -156,22 +165,18 @@ const MainEditor = () => {
     className={`relative inline-block text-lg px-5 py-3 font-medium leading-tight text-white transition-colors duration-300 ease-out border-2 border-gray-900 rounded-lg overflow-hidden group disabled:opacity-50 ${isSending ? 'cursor-not-allowed' : ''}`}
     disabled={isSending}
   >
-    {/* Background Animation */}
     <span className="absolute inset-0 w-full h-full bg-gray-50 rounded-lg"></span>
     <span className="absolute left-0 w-48 h-48 -ml-2 transition-all duration-300 origin-top-right -rotate-90 -translate-x-full translate-y-12 bg-gray-900 group-hover:-rotate-180 ease"></span>
 
-    {/* Button Text */}
     <span className="relative z-10 text-gray-800 group-hover:text-white">
       {isSending ? 'Sending...' : 'Send Request'}
     </span>
 
-    {/* Border Animation */}
     <span className="absolute bottom-0 right-0 w-full h-12 -mb-1 -mr-1 transition-all duration-200 ease-linear color-white rounded-lg group-hover:mb-0 group-hover:mr-0"></span>
   </button>
 </div>
 
 
-      {/* Display the differences if they exist */}
       {differences && differences.length > 0 && (
         <div className="mt-4">
           <h3 className="text-lg font-semibold">Differences:</h3>
@@ -189,6 +194,14 @@ const MainEditor = () => {
           </ul>
         </div>
       )}
+
+      {/* Display formatted payload
+      <div className="mt-4">
+        <h3 className="text-lg font-semibold text-white">Test Case Payload:</h3>
+        <pre className="bg-gray-800 p-4 rounded-lg text-white overflow-auto">
+          {formattedPayload}
+        </pre>
+      </div> */}
     </>
   );
 };
