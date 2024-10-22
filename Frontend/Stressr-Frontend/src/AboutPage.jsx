@@ -1,10 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import { jwtDecode } from "jwt-decode";
 import HashLoader from "react-spinners/HashLoader";
 import Faq from "react-faq-component";
 import "./AboutPage.css";
 import { Scrollbars } from "react-custom-scrollbars";
 import { motion } from "framer-motion";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "./AuthContext";
+import { toast } from "react-hot-toast";
 
 const data = {
   title: <> FAQ&apos;s (Frequently Asked Questions) </>,
@@ -100,9 +103,12 @@ const config = {
 };
 
 const AboutPage = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [profileImage, setProfileImage] = useState(null);
+  const { isLoggedIn, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [profileImage, setProfileImage] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
   const [expandedIndex, setExpandedIndex] = useState(null);
 
   const getCookie = (cookieName) => {
@@ -125,7 +131,6 @@ const AboutPage = () => {
       try {
         const decodedToken = jwtDecode(authToken);
         const profileImageUrl = decodedToken.picture;
-        setIsLoggedIn(true);
         setProfileImage(profileImageUrl);
       } catch (error) {
         console.error("Error decoding token:", error);
@@ -138,6 +143,37 @@ const AboutPage = () => {
 
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    setLoading(true);
+    logout();
+    localStorage.removeItem("userName");
+    toast.success("You have successfully logged out.", {
+      style: {
+        background: "white",
+        color: "black",
+      },
+      duration: 2000,
+    });
+
+    setTimeout(() => {
+      setLoading(false);
+      navigate("/login");
+    }, 2000);
+  };
 
   const userGuideSteps = [
     {
@@ -181,7 +217,7 @@ const AboutPage = () => {
           </div>
         ) : (
           <>
-            <nav className="w-screen  py-4 px-8 flex justify-between items-center bg-gray-950 z-20 fixed">
+            <nav className="w-screen py-4 px-8 flex justify-between items-center bg-gray-950 z-20 fixed">
               <h1 className="text-2xl font-bold text-white drop-shadow-lg flex items-center space-x-2">
                 <button onClick={() => (window.location.href = "/")}>
                   Stressr
@@ -189,25 +225,52 @@ const AboutPage = () => {
               </h1>
               <ul className="flex space-x-6 text-white items-center">
                 <li>
-                  <a href="/dashboard" className="cursor-pointer">
+                  <Link to="/dashboard" className="hover:text-gray-300 transition-colors duration-200">
                     Dashboard
-                  </a>
+                  </Link>
                 </li>
-                {!isLoggedIn ? (
-                  <li>
-                    <a href="/login" className="cursor-pointer">
-                      Login
-                    </a>
-                  </li>
-                ) : (
-                  <li>
-                    {profileImage && (
-                      <img
-                        src={profileImage}
-                        alt="Profile"
-                        className="w-8 h-8 rounded-full"
-                      />
+                <li>
+                  <Link to="/history" className="hover:text-gray-300 transition-colors duration-200">
+                    History
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/about" className="hover:text-gray-300 transition-colors duration-200">
+                    User Guide
+                  </Link>
+                </li>
+                {isLoggedIn && profileImage && (
+                  <li className="relative" ref={dropdownRef}>
+                    <img
+                      src={profileImage}
+                      alt="Profile"
+                      className="w-8 h-8 rounded-full cursor-pointer"
+                      onClick={() => setDropdownOpen(!dropdownOpen)}
+                    />
+                    {dropdownOpen && (
+                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                        <Link
+                          to="/history"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          onClick={() => setDropdownOpen(false)}
+                        >
+                          History
+                        </Link>
+                        <button
+                          onClick={handleLogout}
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          Logout
+                        </button>
+                      </div>
                     )}
+                  </li>
+                )}
+                {!isLoggedIn && (
+                  <li>
+                    <Link to="/login" className="hover:text-gray-300 transition-colors duration-200">
+                      Login
+                    </Link>
                   </li>
                 )}
               </ul>

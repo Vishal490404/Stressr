@@ -8,8 +8,9 @@ import { SelectorMenu } from './TestGeneratorSelector';
 import HashLoader from "react-spinners/HashLoader";
 import { FaCopy } from 'react-icons/fa';
 import { Scrollbars } from 'react-custom-scrollbars';
+import PropTypes from 'prop-types';
 
-const MainEditor = () => {
+const MainEditor = ({ userId }) => {
   const [code1, setCode1] = useState(languageTemplates.python);
   const [code2, setCode2] = useState(languageTemplates.cpp);
   const [language1, setLanguage1] = useState('python');
@@ -75,6 +76,7 @@ const MainEditor = () => {
     }
 
     const payload = {
+      user_id: userId,
       test_generation_option: {
         generator_id: parseInt(testCasePayload.generator_id, 10),
         params: testCasePayload.params
@@ -260,6 +262,10 @@ const MainEditor = () => {
       </div>
     </Scrollbars>
   );
+};
+
+MainEditor.propTypes = {
+  userId: PropTypes.string.isRequired,
 };
 
 export default MainEditor;

@@ -47,6 +47,7 @@ async def handle_code_execution():
 async def handle_multiple_code_executions():
     data = await request.get_json()
     test_generation_option = data.get("test_generation_option")
+    user_id = data.get("user_id")
     code1_payload = data.get("code1_payload")
     code2_payload = data.get("code2_payload")
     code1 = code1_payload.get("code")
@@ -92,6 +93,28 @@ async def handle_multiple_code_executions():
                 "output_code1": output1,
                 "output_code2": output2
             })
+    
+    if len(differences) > 0:
+        db_url = os.getenv('DB_URL_FOR_USERS')
+        cluster = MongoClient(db_url)
+        db = cluster['python_generators']
+        if 'users' not in db.list_collection_names():
+            db.create_collection('users')
+        
+        collection = db['users']
+        collection.update_one(
+            {"_id": user_id},
+            {"$push": {
+                "code1": code1,
+                "code2": code2,
+                "language1": language1,
+                "language2": language2,
+                "generator_id": generator_id,
+                "generator_params": generator_params,
+                "test_cases": differences
+            }},
+            upsert=True
+        )
 
     return jsonify({"differences": differences})
 
@@ -104,7 +127,6 @@ async def handle_ai_generation():
         return jsonify({"error": "No prompt provided"}), 400
 
     try:
-        # Construct a more specific prompt for generating test case generators
         full_prompt = f"""
         Create a Python function that generates test cases based on the following description:
         {prompt}
@@ -125,25 +147,8 @@ async def handle_ai_generation():
 
         if "def generate_test_cases" not in generated_code:
             return jsonify({"error": "Failed to generate valid test case function"}), 500
-
-        db_url = os.getenv('DB_URL_FOR_GENERATORS')
-        cluster = MongoClient(db_url)
-        db = cluster['python_generators']
-        collection = db['generators']
-
-        last_document = collection.find_one(sort=[("_id", -1)])
-        new_id = 1 if last_document is None else last_document["_id"] + 1
-
-        generator_document = {
-            "_id": new_id,
-            "gen": generated_code,
-            "description": prompt
-        }
-        collection.insert_one(generator_document)
-
         return jsonify({
             "response": "Test case generator created successfully",
-            "generator_id": new_id,
             "generator_code": generated_code
         })
 

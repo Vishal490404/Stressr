@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 import { toast } from 'react-hot-toast';
@@ -9,14 +9,13 @@ import MainEditor from './Components/MainEditor';
 
 
 const Dashboard = () => {
-    const { isLoggedIn } = useContext(AuthContext);
+    const { isLoggedIn, logout } = useContext(AuthContext);
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [profileImage, setProfileImage] = useState(null);
-
-    const [code1, setCode1] = useState('// Write your code here...');
-    const [code2, setCode2] = useState('// Compare it with this code...');
-    const [language, setLanguage] = useState('javascript');
+    const [userId, setUserId] = useState(null);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
 
     const getCookie = (cookieName) => {
         const name = cookieName + "=";
@@ -41,8 +40,8 @@ const Dashboard = () => {
                 try {
                     const decodedToken = jwtDecode(authToken);
                     const profileImageUrl = decodedToken.picture;
-                    console.log(profileImageUrl)
                     setProfileImage(profileImageUrl);
+                    setUserId(decodedToken.sub || decodedToken.user_id);
                 } catch (error) {
                     console.error("Error decoding token:", error);
                 }
@@ -51,12 +50,43 @@ const Dashboard = () => {
     }, [isLoggedIn, navigate]);
 
     useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
+    useEffect(() => {
         const timer = setTimeout(() => {
             setLoading(false);
         }, 3000);
 
         return () => clearTimeout(timer);
     }, []);
+
+    const handleLogout = () => {
+        setLoading(true);
+        logout();
+        localStorage.removeItem('userName');
+        toast.success('You have successfully logged out.', {
+            style: {
+                background: 'white',
+                color: 'black',
+            },
+            duration: 2000,
+        });
+
+        setTimeout(() => {
+            setLoading(false);
+            navigate('/login');
+        }, 2000);
+    };
 
     if (!isLoggedIn) {
         return null;
@@ -76,20 +106,44 @@ const Dashboard = () => {
                         </h1>
                         <ul className="flex space-x-6 text-white items-center">
                             <li>
+                                <Link to="/dashboard" className="hover:text-gray-300 transition-colors duration-200">
+                                    Dashboard
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/history" className="hover:text-gray-300 transition-colors duration-200">
+                                    History
+                                </Link>
+                            </li>
+                            <li>
                                 <Link to="/about" className="hover:text-gray-300 transition-colors duration-200">
                                     User Guide
                                 </Link>
                             </li>
-                            {!isLoggedIn ? (
-                                <li><Link to="/login" className="hover:text-gray-300 transition-colors duration-200">Login</Link></li>
-                            ) : (
-                                <li>
-                                    {profileImage && (
-                                        <img
-                                            src={profileImage}
-                                            alt="Profile"
-                                            className="w-8 h-8 rounded-full"
-                                        />
+                            {profileImage && (
+                                <li className="relative" ref={dropdownRef}>
+                                    <img
+                                        src={profileImage}
+                                        alt="Profile"
+                                        className="w-8 h-8 rounded-full cursor-pointer"
+                                        onClick={() => setDropdownOpen(!dropdownOpen)}
+                                    />
+                                    {dropdownOpen && (
+                                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                                            <Link
+                                                to="/history"
+                                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                onClick={() => setDropdownOpen(false)}
+                                            >
+                                                History
+                                            </Link>
+                                            <button
+                                                onClick={handleLogout}
+                                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                            >
+                                                Logout
+                                            </button>
+                                        </div>
                                     )}
                                 </li>
                             )}
@@ -97,14 +151,7 @@ const Dashboard = () => {
                     </nav>
                     <div className="h-screen w-screen flex flex-col justify-center items-center z-10 absolute">
                         <h2 className="text-3xl font-bold mb-4 text-white">Code</h2>
-                        <MainEditor
-                            code1={code1}
-                            setCode1={setCode1}
-                            code2={code2}
-                            setCode2={setCode2}
-                            language={language}
-                            setLanguage={setLanguage}
-                        />
+                        <MainEditor userId={userId}/>
                     </div>
                 </>
             )}

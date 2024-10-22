@@ -3,6 +3,7 @@
     align-items: center;    
     width: 90%;          
     padding: 30px;
+    -webkit-backdrop-filter: blur(5px);
     backdrop-filter: blur(5px); 
     background: rgba(255, 255, 255, 0.08); 
     background-color: #1c1c1c;
