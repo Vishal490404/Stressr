@@ -118,6 +118,17 @@ async def handle_multiple_code_executions():
 
     return jsonify({"differences": differences})
 
+@app.route('/history', methods=['GET'])
+async def handle_history():
+    data = await request.get_json()
+    user_id = data.get("user_id")
+    db_url = os.getenv('DB_URL_FOR_USERS')
+    cluster = MongoClient(db_url)
+    db = cluster['python_generators']
+    collection = db['users']
+    history = collection.find_one({"_id": user_id})
+    return jsonify({"history": history})
+
 @app.route('/ai-generate', methods=['POST'])
 async def handle_ai_generation():
     data = await request.get_json()
