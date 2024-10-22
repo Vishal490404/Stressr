@@ -7,6 +7,7 @@ import AboutPage from "./AboutPage";
 import { Toaster } from "react-hot-toast";
 import Dashboard from "./Dashboard";
 import NotFound from "./Components/NotFound"; 
+import History from "./History";
 
 function App() {
   return (
@@ -19,7 +20,9 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/history" element={<History />} />
           <Route path="*" element={<NotFound />} /> 
+
         </Routes>
       </Router>
     </AuthProvider>

@@ -30,6 +30,32 @@ async def handle_runtimes():
     result = await client.runtimes()
     return jsonify({"response": result})
 
+@app.route('/history', methods=['GET'])
+async def handle_history():
+    user_id = request.args.get('user_id')
+    # print(user_id) 
+    if not user_id:
+        return jsonify({"error": "User ID not provided"}), 400
+
+    try:
+        db_url = os.getenv('DB_URL_FOR_USERS')
+        cluster = MongoClient(db_url)
+        db = cluster['python_generators']
+        collection = db['users']
+        user_data = collection.find_one({"_id": user_id})
+        # print(user_data)
+
+        if not user_data:
+            return jsonify({"error": "User not found"}), 404
+
+        history = user_data
+        # print(history)
+        return jsonify({"history": history})
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route('/execute', methods=['POST'])
 async def handle_code_execution():
     data = await request.get_json()
@@ -118,16 +144,8 @@ async def handle_multiple_code_executions():
 
     return jsonify({"differences": differences})
 
-@app.route('/history', methods=['GET'])
-async def handle_history():
-    data = await request.get_json()
-    user_id = data.get("user_id")
-    db_url = os.getenv('DB_URL_FOR_USERS')
-    cluster = MongoClient(db_url)
-    db = cluster['python_generators']
-    collection = db['users']
-    history = collection.find_one({"_id": user_id})
-    return jsonify({"history": history})
+ 
+
 
 @app.route('/ai-generate', methods=['POST'])
 async def handle_ai_generation():

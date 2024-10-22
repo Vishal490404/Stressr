@@ -3,11 +3,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 import { toast } from 'react-hot-toast';
 import HashLoader from 'react-spinners/HashLoader';
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';  // Correct import here
 import axios from 'axios';
 
 const History = () => {
-  const { isLoggedIn, setIsLoggedIn, logout } = useContext(AuthContext);
+  const { isLoggedIn, logout } = useContext(AuthContext);  
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [profileImage, setProfileImage] = useState(null);
@@ -38,7 +38,7 @@ const History = () => {
       if (authToken) {
         try {
           const decodedToken = jwtDecode(authToken);
-          setProfileImage(decodedToken.picture);
+          if (decodedToken.picture) setProfileImage(decodedToken.picture); 
           setUserId(decodedToken.sub || decodedToken.user_id);
         } catch (error) {
           console.error("Error decoding token:", error);
@@ -51,8 +51,10 @@ const History = () => {
     const fetchHistory = async () => {
       if (userId) {
         try {
-          const response = await axios.get(`/history?user_id=${userId}`);
-          setHistory(response.data);
+          // console.log(userId)
+          const response = await axios.get(`http://localhost:9563/history?user_id=${userId}`);
+          // console.log(response.data)
+          setHistory(response.data || []);
           setLoading(false);
         } catch (error) {
           console.error("Error fetching history:", error);
@@ -155,11 +157,12 @@ const History = () => {
           <div className="h-screen w-screen flex flex-col justify-center items-center z-10 absolute pt-16">
             <h2 className="text-3xl font-bold mb-4 text-white">History</h2>
             <div className="w-3/4 bg-gray-800 rounded-lg p-6 overflow-y-auto max-h-[70vh]">
+              {/* {console.log(history)} */}
               {history.length > 0 ? (
+                
                 history.map((item, index) => (
                   <div key={index} className="mb-4 p-4 bg-gray-700 rounded-lg">
-                    <p className="text-white">{item.content}</p>
-                    <p className="text-sm text-gray-400 mt-2">{new Date(item.timestamp).toLocaleString()}</p>
+                    <p className="text-white">{item.code1}</p>
                   </div>
                 ))
               ) : (
@@ -174,3 +177,43 @@ const History = () => {
 };
 
 export default History;
+
+
+/* 
+{history: {…}}
+history
+: 
+code1
+: 
+['for _ in range(int(input())):\n    a = int(input())…list(map(int,input().split()))\n    print(sum(x))\n']
+code2
+: 
+['#include<bits/stdc++.h>\n\n\n\nusing namespace std;\n\n\n…1;\n        }\n        cout << sum << endl;\n    }\n}']
+generator_id
+: 
+[5]
+generator_params
+: 
+['1 1000 0 20']
+language1
+: 
+['python']
+language2
+: 
+['cpp']
+test_cases
+: 
+[Array(1)]
+_id
+: 
+"117815826491527942729"
+[[Prototype]]
+: 
+Object
+[[Prototype]]
+: 
+Object
+
+
+
+*/
