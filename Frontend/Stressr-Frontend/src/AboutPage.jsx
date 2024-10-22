@@ -8,6 +8,10 @@ import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "./AuthContext";
 import { toast } from "react-hot-toast";
+import loginImage from "./assets/signin.png";
+import testImage from "./assets/test.png";
+import codes from "./assets/codes.png";
+import aitest from "./assets/aitest.png";
 
 const data = {
   title: <> FAQ&apos;s (Frequently Asked Questions) </>,
@@ -179,22 +183,22 @@ const AboutPage = () => {
     {
       title: "Step 1: Log in or Sign up",
       description: "Create an account or log in to access all features of Stressr.",
-      image: "/path/to/login-screenshot.png"
+      image: loginImage
     },
     {
       title: "Step 2: Create a New Test",
       description: "From your dashboard, click on 'New Test' to start a new stress testing session.",
-      image: "/path/to/new-test-screenshot.png"
+      image: testImage
     },
     {
       title: "Step 3: Enter Your Code",
       description: "Paste your solution code and, if applicable, the brute force code into the provided editors.",
-      image: "/path/to/code-entry-screenshot.png"
+      image: codes
     },
     {
       title: "Step 4: Set Test Parameters",
       description: "Configure the test settings, such as the number of test cases and input ranges.",
-      image: "/path/to/test-params-screenshot.png"
+      image: aitest
     },
     {
       title: "Step 5: Run the Test",
