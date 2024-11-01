@@ -89,7 +89,7 @@ async def handle_multiple_code_executions():
         return jsonify({"error" : "No generator found!"})
     generator_code = generator_document["gen"]
     generator_lang = 'python'
-
+    differences = []
     client = Request.PistonClient()
     for _ in range(10):
         file_generator = Request.File(content=generator_code, filename="Main")
@@ -99,7 +99,6 @@ async def handle_multiple_code_executions():
             return jsonify({"error": "Test generator execution failed"}), 500
         
         generated_test_cases = generator_output["run"]["stdout"]
-        differences = []
 
         for code, language,code_number in [(code1, language1,"code1"), (code2, language2,"code2")]:
             file_to_execute = Request.File(content=code, filename=f"Main")
