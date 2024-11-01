@@ -329,20 +329,20 @@ export function SelectorMenu({ onPayloadChange }) {
                                 <select 
                                     name="model-selector" 
                                     id="model-selector"
-                                    className="bg-gray-700 text-gray-300 mb-6 px-2 py-1 border border-gray-600 rounded-lg hover:border-gray-400 transition-colors duration-200"
+                                    className="bg-gray-800 text-gray-300 mb-6 px-2 py-1 border border-gray-800 rounded-lg hover:border-gray-400 transition-colors duration-200"
                                     onChange={handleModelChange}
                                 >
-                                    <option value="1" className="bg-gray-700 text-gray-300">Gemini Pro</option>
-                                    <option value="2" className="bg-gray-700 text-gray-300">Llama 3.0</option>
-                                    <option value="3" className="bg-gray-700 text-gray-300">Llama 3.1</option>
-                                    <option value="4" className="bg-gray-700 text-gray-300">Llama 3.2</option>
+                                    <option value="1" className="bg-gray-800 text-gray-300">Gemini Pro</option>
+                                    <option value="2" className="bg-gray-800 text-gray-300">Llama 3.0</option>
+                                    <option value="3" className="bg-gray-800 text-gray-300">Llama 3.1</option>
+                                    <option value="4" className="bg-gray-800 text-gray-300">Llama 3.2</option>
                                 </select>
                             </div>
                             <textarea
                                 id="ai-prompt"
                                 value={aiPrompt}
                                 onChange={handleAiPromptChange}
-                                className="border p-2 rounded-lg w-full h-24 bg-gray-700 text-gray-300"
+                                className="border p-2 rounded-lg w-full h-24 bg-gray-800 text-gray-300"
                                 placeholder="E.g., Generator for binary string of size in range 1 and 100"
                             />
                         </div>
@@ -380,7 +380,7 @@ export function SelectorMenu({ onPayloadChange }) {
             </div>
             {showPreview && (
                 <div
-                    className="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full z-50 modal-overlay"
+                    className="fixed inset-0 bg-gray-800 bg-opacity-75 overflow-y-auto h-full w-full z-50 modal-overlay"
                     onClick={closePreview}
                 >
                     <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-xl bg-gray-800">
@@ -402,7 +402,7 @@ export function SelectorMenu({ onPayloadChange }) {
                             <div className="items-center px-4 py-3 space-x-2">
                                 <button
                                     onClick={handleCopyCode}
-                                    className="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    className="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md shadow-sm hover:bg-red-800 "
                                 >
                                     Copy Code
                                 </button>

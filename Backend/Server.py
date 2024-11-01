@@ -1,4 +1,4 @@
-from quart import Quart, jsonify, request
+from quart import Quart, jsonify, request, Response, stream_with_context
 from quart_cors import cors
 from pymongo import MongoClient
 import os
@@ -45,7 +45,7 @@ async def handle_history():
         # print(user_data)
 
         if not user_data:
-            return jsonify({"error": "User not found"}), 404
+            return jsonify({"error": "User not found"}), 200
 
         history = user_data
         # print(history)
@@ -90,36 +90,44 @@ async def handle_multiple_code_executions():
     generator_lang = 'python'
     differences = []
     client = Request.PistonClient()
-    for _ in range(10):
-        file_generator = Request.File(content=generator_code, filename="Main")
-        generator_output = await client.execute(generator_lang, [file_generator], stdin=generator_params)
 
-        if generator_output.get("run", {}).get("stdout") is None:
-            return jsonify({"error": "Test generator execution failed"}), 500
-        
-        generated_test_cases = generator_output["run"]["stdout"]
+    @stream_with_context
+    async def generate_response():
+        for _ in range(10):
+            file_generator = Request.File(content=generator_code, filename="Main")
+            generator_output = await client.execute(generator_lang, [file_generator], stdin=generator_params)
 
-        for code, language,code_number in [(code1, language1,"code1"), (code2, language2,"code2")]:
-            file_to_execute = Request.File(content=code, filename=f"Main")
-            code_output = await client.execute(language, [file_to_execute], stdin=generated_test_cases)
+            if generator_output.get("run", {}).get("stdout") is None:
+                response_data = await jsonify({'error': 'Test generator execution failed'}).get_data(as_text=True)
+                yield f"data: {response_data}\n\n"
+                return
+            generated_test_cases = generator_output["run"]["stdout"]
+
+            for code, language,code_number in [(code1, language1,"code1"), (code2, language2,"code2")]:
+                file_to_execute = Request.File(content=code, filename=f"Main")
+                code_output = await client.execute(language, [file_to_execute], stdin=generated_test_cases)
+                
+                if code_output.get("run", {}).get("stdout") is None:
+                    response_data = await jsonify({'error': f'Execution failed for {code_number}'}).get_data(as_text=True)
+                    yield f"data: {response_data}\n\n"
+                    return
+                if code_number == "code1":
+                    output1 = code_output["run"]["stdout"]
+                else:
+                    output2 = code_output["run"]["stdout"]
             
-            if code_output.get("run", {}).get("stdout") is None:
-                return jsonify({"error": f"Execution failed for {code_number}"}), 500
-            
-            if code_number == "code1":
-                output1 = code_output["run"]["stdout"]
-            else:
-                output2 = code_output["run"]["stdout"]
-
-        if output1 != output2:
-            differences.append({
-                "test_case": generated_test_cases,
-                "output_code1": output1,
-                "output_code2": output2
-            })
+            if output1 != output2:
+                differences.append({
+                    "test_case": generated_test_cases,
+                    "output_code1": output1,
+                    "output_code2": output2
+                })
+                # print(differences)
+                response_data = await jsonify({'difference': differences}).get_data(as_text=True)
+                yield f"data: {response_data}\n\n"
     
     if len(differences) > 0:
-        db_url = os.getenv('DB_URL_FOR_USERS')
+        db_url = os.getenv('DB_URL_FOR_GENERATORS')
         cluster = MongoClient(db_url)
         db = cluster['python_generators']
         if 'users' not in db.list_collection_names():
@@ -133,18 +141,19 @@ async def handle_multiple_code_executions():
                 "code2": code2,
                 "language1": language1,
                 "language2": language2,
-                "generator_id": generator_id,
-                "generator_params": generator_params,
-                "test_cases": differences
             }},
             upsert=True
         )
 
-    return jsonify({"differences": differences})
+    response = Response(generate_response(), mimetype='text/event-stream')
+    response.headers['Cache-Control'] = 'no-cache'
+    response.headers['Connection'] = 'keep-alive'
+    return response
 
  
 @app.route('/find-using-file', methods=['POST'])
 async def handle_file_uplaod():
+
     pass
 
 @app.route('/ai-generate', methods=['POST'])
@@ -223,7 +232,7 @@ async def handle_ai_generation():
         else:
             return handle_groq_requests()
     except Exception as e:
-        print(e)
+        # print(e)
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':

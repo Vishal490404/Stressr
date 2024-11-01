@@ -154,15 +154,16 @@ const History = () => {
               )}
             </ul>
           </nav>
-          <div className="h-screen w-screen flex flex-col justify-center items-center z-10 absolute pt-16">
+          <div className="h-screen w-screen flex flex-col items-center z-10 absolute pt-16">
             <h2 className="text-3xl font-bold mb-4 text-white">History</h2>
             <div className="w-3/4 bg-gray-800 rounded-lg p-6 overflow-y-auto max-h-[70vh]">
-              {/* {console.log(history)} */}
-              {history.length > 0 ? (
+              {/* {console.log(history.history)} */}
+              {history && history.history && history.history.code1.length > 0 ? (
                 
-                history.map((item, index) => (
+                history.history.code1.map((item, index) => (
                   <div key={index} className="mb-4 p-4 bg-gray-700 rounded-lg">
-                    <p className="text-white">{item.code1}</p>
+                    {/* {console.log(item)} */}
+                    <p className="text-white">{item}</p>
                   </div>
                 ))
               ) : (
