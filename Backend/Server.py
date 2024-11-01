@@ -5,14 +5,13 @@ import os
 from dotenv import load_dotenv
 import Request
 import google.generativeai as genai
-import json
+from Available_stuff import available_models
+from groq import Groq
 load_dotenv()
 
 app = Quart(__name__)
 app = cors(app)
 
-genai.configure(api_key=os.getenv('GOOGLE_AI_API_KEY'))
-model = genai.GenerativeModel('gemini-pro')
 
 def return_Gen(generator_id: int):
     db_url = os.getenv('DB_URL_FOR_GENERATORS')
@@ -144,43 +143,87 @@ async def handle_multiple_code_executions():
     return jsonify({"differences": differences})
 
  
-
+@app.route('/find-using-file', methods=['POST'])
+async def handle_file_uplaod():
+    pass
 
 @app.route('/ai-generate', methods=['POST'])
 async def handle_ai_generation():
     data = await request.get_json()
     prompt = data.get("prompt")
-    
+    selected_model = data.get("model_id")
+    # print(available_models)
+    get_model_name = available_models[int(selected_model)]
+    # print(get_model_name)
     if not prompt:
         return jsonify({"error": "No prompt provided"}), 400
 
     try:
-        full_prompt = f"""
-        Create a Python function that generates test cases based on the following description:
-        {prompt}
-        
-        The function should:
-        1. Be named 'generate_test_cases'
-        2. Take appropriate parameters for customization (e.g., number of test cases, range of values)
-        
-        3. Use Python's random module for generating random values
-        4. Include comments explaining the logic
-        5. Include a sample test case in the function in comments
-        6. If no test cases are required then the code should return generate a single test case
-        Provide only the Python code without any additional explanation.
-        """
+        def handle_gemini_requests():
+            # print("Hello")
+            genai.configure(api_key=os.getenv('GOOGLE_AI_API_KEY'))
+            model = genai.GenerativeModel('gemini-pro')
+            full_prompt = f"""
+            Create a Python function that generates test cases based on the following description:
+            {prompt}
+            
+            The function should:
+            1. Be named 'generate_test_cases'
+            2. Take appropriate parameters for customization (e.g., number of test cases, range of values)
+            3. Use Python's random module for generating random values
+            4. Include comments explaining the logic
+            5. Include a sample test case in the function in comments
+            6. If no test cases are required then the code should return generate a single test case
+            Provide only the Python code without any additional explanation.
+            """
 
-        response = model.generate_content(full_prompt)
-        generated_code = response.text
+            response = model.generate_content(full_prompt)
+            generated_code = response.text
 
-        if "def generate_test_cases" not in generated_code:
-            return jsonify({"error": "Failed to generate valid test case function"}), 500
-        return jsonify({
-            "response": "Test case generator created successfully",
-            "generator_code": generated_code
-        })
+            if "def generate_test_cases" not in generated_code:
+                return jsonify({"error": "Failed to generate valid test case generator"}), 500
+            return jsonify({
+                "response": "Test case generator created successfully",
+                "generator_code": generated_code
+            })
+        def handle_groq_requests():
+            # print("Hello")
+            full_prompt = f"""
+            Create a Python function that generates test cases based on the following description:
+            {prompt}
+            
+            The function should:
+            1. Be named 'generate_test_cases'
+            2. Take appropriate parameters for customization (e.g., number of test cases, range of values)
+            3. Use Python's random module for generating random values
+            4. Include comments explaining the logic
+            5. Include a sample test case in the function in comments
+            6. If no test cases are required then the code should return generate a single test case
+            7. Should include sample usage of the function in the code
+            8. Should only print test cases and not any text preceding the test cases
+            Provide only the Python code without any additional explanation.
+            """
+            groq_client = Groq(api_key=os.getenv('GROQ_AI_API_KEY'))
+            chat_completion = groq_client.chat.completions.create(
+                messages=[
+                    {"role": "user", "content": full_prompt}
+                ],
+                model=get_model_name
+            )
+            generated_code = chat_completion.choices[0].message.content
+            if "def generate_test_cases" not in generated_code:
+                return jsonify({"error": "Failed to generate valid test case generator"}), 500
+            return jsonify({
+                "response": "Test case generator created successfully",
+                "generator_code": generated_code
+            })
 
+        if get_model_name == 'Gemini_Pro':
+            return handle_gemini_requests()
+        else:
+            return handle_groq_requests()
     except Exception as e:
+        print(e)
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':

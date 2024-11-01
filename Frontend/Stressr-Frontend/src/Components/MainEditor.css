@@ -46,29 +46,7 @@
     flex-shrink: 0; 
 }
 
-.language-selector {
-    margin-bottom: 1rem;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 1rem;
-}
 
-.language-selector select {
-    padding: 0.5rem 1rem;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.15);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    font-size: 1rem;
-    outline: none;
-    transition: background 0.3s ease;
-    width: 150px;
-}
-
-.language-selector select:focus {
-    background: rgba(255, 255, 255, 0.2);
-}
 
 .monaco-editor {
     border-radius: 10px;
@@ -90,19 +68,18 @@
 }
 
 .language-selector select {
-    padding: 0.5rem 1rem;
     border-radius: 10px;
     background: rgba(50, 50, 50, 0.9); 
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.3);
     font-size: 1rem;
     transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-    width: 150px;
+    width: 120px;
 }
 
 .language-selector select:focus {
     background: rgba(70, 70, 70, 0.95); 
-    border-color: rgba(255, 255, 255, 0.6);
+    border-color: rgba(255, 255, 255, 0.4);
 }
 
 .language-selector option {

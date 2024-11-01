@@ -135,7 +135,7 @@ const MainEditor = ({ userId }) => {
               <h2 className="editor-title">Sub-optimal Solution</h2>
               <div className="language-selector">
                 <label htmlFor="language1">Language:</label>
-                <select id="language1" value={language1} onChange={handleLanguageChange1}>
+                <select id="language1" value={language1} onChange={handleLanguageChange1} className='px-2 py-1'>
                   {LANGUAGES.map((lang) => (
                     <option key={lang} value={lang.toLowerCase()}>
                       {lang}
@@ -164,7 +164,7 @@ const MainEditor = ({ userId }) => {
               <h2 className="editor-title">Optimal Solution</h2>
               <div className="language-selector">
                 <label htmlFor="language2">Language:</label>
-                <select id="language2" value={language2} onChange={handleLanguageChange2}>
+                <select id="language2" value={language2} onChange={handleLanguageChange2} className="px-2 py-1">
                   {LANGUAGES.map((lang) => (
                     <option key={lang} value={lang.toLowerCase()}>
                       {lang}
