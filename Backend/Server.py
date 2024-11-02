@@ -98,17 +98,21 @@ async def handle_multiple_code_executions():
             generator_output = await client.execute(generator_lang, [file_generator], stdin=generator_params)
 
             if generator_output.get("run", {}).get("stdout") is None:
-                response_data = await jsonify({'error': 'Test generator execution failed'}).get_data(as_text=True)
+                response_data = await jsonify({'error': 'Test generator execution failed','what': generator_output.get("run", {}).get("stderr")}).get_data(as_text=True)
                 yield f"data: {response_data}\n\n"
                 return
             generated_test_cases = generator_output["run"]["stdout"]
-
+            # print(code1)
             for code, language,code_number in [(code1, language1,"code1"), (code2, language2,"code2")]:
                 file_to_execute = Request.File(content=code, filename=f"Main")
                 code_output = await client.execute(language, [file_to_execute], stdin=generated_test_cases)
-                
-                if code_output.get("run", {}).get("stdout") is None:
-                    response_data = await jsonify({'error': f'Execution failed for {code_number}'}).get_data(as_text=True)
+                # print(code_output)    
+                if code_output.get("run", {}).get("signal") != None or code_output.get("compile", {}).get("signal") != None:
+                    response_data = await jsonify({'error': f'Execution failed for {code_number}','what': code_output.get("run", {}).get("message") if code_output.get("run", {}).get("signal") != None else code_output.get("compile", {}).get("message")}).get_data(as_text=True)
+                    yield f"data: {response_data}\n\n"
+                    return
+                if code_output.get("run", {}).get("stderr") != '':
+                    response_data = await jsonify({'error': f'Execution failed for {code_number}','what': code_output.get("run", {}).get("stderr")}).get_data(as_text=True)
                     yield f"data: {response_data}\n\n"
                     return
                 if code_number == "code1":

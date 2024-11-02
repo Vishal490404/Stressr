@@ -8,6 +8,8 @@ import { SelectorMenu } from './TestGeneratorSelector';
 import HashLoader from "react-spinners/HashLoader";
 import { Scrollbars } from 'react-custom-scrollbars';
 import PropTypes from 'prop-types';
+import { Dialog, Transition } from '@headlessui/react'
+import { Fragment } from 'react'
 
 const MainEditor = ({ userId }) => {
   const [code1, setCode1] = useState(languageTemplates.python);
@@ -16,6 +18,8 @@ const MainEditor = ({ userId }) => {
   const [language2, setLanguage2] = useState('cpp');
   const [isSending, setIsSending] = useState(false);
   const [isComing, setIsComing] = useState(false);
+  const [error_code1, setError_code1] = useState(null);
+  const [error_code2, setError_code2] = useState(null);
   const [testCasePayload, setTestCasePayload] = useState({
     generator_id: null,
     params: '',
@@ -32,6 +36,8 @@ const MainEditor = ({ userId }) => {
     //   test_case: "input = [5, 0]"
     // }
   ]);
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [activeError, setActiveError] = useState({ code: null, error: null });
 
   const loaderRef = useRef(null);
 
@@ -117,11 +123,19 @@ const MainEditor = ({ userId }) => {
           if (line.startsWith('data: ')) {
             try {
               const data = JSON.parse(line.slice(6));
+              // console.log(data);
               if (data.difference) {
                 setDifferences(prev => [...data.difference]);
                 setIsSending(false);
               } else if (data.error) {
-                toast.error(data.error);
+                if (data.error === 'Execution failed for code1') {
+                  setError_code1(data.what);
+                  setActiveError({ code: 1, error: data.what });
+                } else {
+                  setError_code2(data.what);
+                  setActiveError({ code: 2, error: data.what });
+                }
+                setIsErrorModalOpen(true);
               }
             } catch (e) {
               console.error('Error parsing SSE data:', e);
@@ -130,7 +144,9 @@ const MainEditor = ({ userId }) => {
         }
       }
       setIsComing(false);
-      toast.success('Test generation completed!');
+      if(!error_code1 && !error_code2){
+        toast.success('Test generation completed!');
+      }
     } catch (error) {
       toast.error('Failed to generate test cases');
       console.error('Error:', error);
@@ -149,9 +165,72 @@ const MainEditor = ({ userId }) => {
     });
   };
 
+  const ErrorModal = () => (
+    <Transition appear show={isErrorModalOpen} as={Fragment}>
+      <Dialog 
+        as="div" 
+        className="relative z-50" 
+        onClose={() => setIsErrorModalOpen(false)}
+      >
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-black bg-opacity-40" />
+        </Transition.Child>
+
+        <div className="fixed inset-0 overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4 text-center">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
+            >
+              <Dialog.Panel className="relative w-full max-w-2xl transform overflow-hidden rounded-2xl bg-gray-900 p-8 text-left align-middle shadow-2xl transition-all border border-gray-700">
+                <button
+                  type="button"
+                  className="absolute top-4 right-4 inline-flex justify-center items-center p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors duration-200 focus:outline-none"
+                  onClick={() => setIsErrorModalOpen(false)}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+
+                <Dialog.Title
+                  as="h3"
+                  className="text-xl font-bold leading-6 text-red-500 flex items-center gap-2 mb-4"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  Error in {activeError.code === 1 ? 'Sub-optimal' : 'Optimal'} Solution
+                </Dialog.Title>
+                <div className="mt-4">
+                  <div className="text-sm font-semibold text-gray-400 mb-2">Error Details:</div>
+                  <pre className="text-sm font-medium text-gray-200 bg-gray-800 p-6 rounded-lg overflow-x-auto border border-gray-700 shadow-inner">
+                    {activeError.error}
+                  </pre>
+                </div>
+              </Dialog.Panel>
+            </Transition.Child>
+          </div>
+        </div>
+      </Dialog>
+    </Transition>
+  );
+
   return (
     <Scrollbars style={{ width: '100%', height: '100vh' }}>
-      <div className="relative p-4">
         <div className={`${isSending ? 'opacity-50 pointer-events-none' : ''}`}>
           <div className="main-editor-container">
             <div className="editor-container">
@@ -236,7 +315,7 @@ const MainEditor = ({ userId }) => {
           </div>
 
           {!isSending && differences && differences.length > 0 && (
-            <div className='p-7'>
+            <div className='p-7 '>
               <div className="mt-8 bg-gray-900 rounded-2xl p-6 shadow-xl border border-gray-800">
                 <h3 className="text-2xl font-semibold text-gray-100 mb-4">
                   You're optimal solution was wrong on following test cases:
@@ -305,14 +384,15 @@ const MainEditor = ({ userId }) => {
               </div>
             </div>
           )}
-        </div>
-        {isSending && (
-          <div ref={loaderRef} className="fixed inset-0 bg-gray-900 bg-opacity-75 flex flex-col items-center justify-center z-50">
+        
+      </div>
+      {isSending && (
+          <div ref={loaderRef} className="fixed inset-0 bg-zinc-950 bg-opacity-25 flex flex-col items-center justify-center z-100">
             <HashLoader color="#ffffff" loading={isSending} size={60} />
             <p className="mt-8 text-white text-xl">Finding test cases for you...</p>
           </div>
         )}
-      </div>
+      <ErrorModal />
     </Scrollbars>
   );
 };
