@@ -81,11 +81,13 @@ async def handle_multiple_code_executions():
     language2 = code2_payload.get("language")
     generator_id = test_generation_option.get("generator_id")
     generator_params = test_generation_option.get("params")
-
     generator_document = return_Gen(generator_id)
-    # print(generator_document)
+    if code1 == '':
+        return jsonify({"error" : f"No code provided in sub-optimal solution"})
+    if code2 == '':
+        return jsonify({"error" : f"No code provided in optimal solution"})
     if not generator_document:
-        return jsonify({"error" : "No generator found!"})
+        return jsonify({"generator_error" : "No generator selected!"})
     generator_code = generator_document["gen"]
     generator_lang = 'python'
     differences = []
@@ -117,18 +119,28 @@ async def handle_multiple_code_executions():
                     return
                 if code_number == "code1":
                     output1 = code_output["run"]["stdout"]
+                    if len(output1) > 1000:
+                        output1 = output1[:1000] + '...\n[Output truncated - too large]'
                 else:
                     output2 = code_output["run"]["stdout"]
+                    if len(output2) > 1000:
+                        output2 = output2[:1000] + '...\n[Output truncated - too large]'
+                    
             
             if output1 != output2:
-                differences.append({
+                difference = {
                     "test_case": generated_test_cases,
                     "output_code1": output1,
                     "output_code2": output2
-                })
-                # print(differences)
+                }
+                # if 'full_output1' in locals():
+                #     difference["full_output_code1"] = full_output1
+                # if 'full_output2' in locals():
+                #     difference["full_output_code2"] = full_output2
+                
+                differences.append(difference)
                 response_data = await jsonify({'difference': differences}).get_data(as_text=True)
-                yield f"data: {response_data}\n\n"
+                yield f"data: {response_data}\n\n"  
     
     if len(differences) > 0:
         db_url = os.getenv('DB_URL_FOR_GENERATORS')

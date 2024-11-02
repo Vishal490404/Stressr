@@ -20,6 +20,7 @@ const MainEditor = ({ userId }) => {
   const [isComing, setIsComing] = useState(false);
   const [error_code1, setError_code1] = useState(null);
   const [error_code2, setError_code2] = useState(null);
+  const [success, setSuccess] = useState(false);
   const [testCasePayload, setTestCasePayload] = useState({
     generator_id: null,
     params: '',
@@ -38,7 +39,7 @@ const MainEditor = ({ userId }) => {
   ]);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [activeError, setActiveError] = useState({ code: null, error: null });
-
+  
   const loaderRef = useRef(null);
 
   const handleTestCasePayload = (payload) => {
@@ -118,7 +119,19 @@ const MainEditor = ({ userId }) => {
 
         const text = decoder.decode(value);
         const lines = text.split('\n');
+        // console.log(lines);
+        try {
+          const parsedLine = JSON.parse(lines[0]);
+          if ("error" in parsedLine) {
+            setSuccess(false);
+            setError_code1(parsedLine.error);
 
+            setActiveError({ code: 1, error: parsedLine.error });
+            setIsErrorModalOpen(true);
+          }
+        } catch (e) {
+          console.error('Error parsing line:', e);
+        }
         for (const line of lines) {
           if (line.startsWith('data: ')) {
             try {
@@ -128,6 +141,7 @@ const MainEditor = ({ userId }) => {
                 setDifferences(prev => [...data.difference]);
                 setIsSending(false);
               } else if (data.error) {
+                setSuccess(false);
                 if (data.error === 'Execution failed for code1') {
                   setError_code1(data.what);
                   setActiveError({ code: 1, error: data.what });
@@ -144,7 +158,7 @@ const MainEditor = ({ userId }) => {
         }
       }
       setIsComing(false);
-      if(!error_code1 && !error_code2){
+      if(!error_code1 && !error_code2 && success){
         toast.success('Test generation completed!');
       }
     } catch (error) {
@@ -217,7 +231,7 @@ const MainEditor = ({ userId }) => {
                 </Dialog.Title>
                 <div className="mt-4">
                   <div className="text-sm font-semibold text-gray-400 mb-2">Error Details:</div>
-                  <pre className="text-sm font-medium text-gray-200 bg-gray-800 p-6 rounded-lg overflow-x-auto border border-gray-700 shadow-inner">
+                  <pre className="text-sm font-medium text-gray-200 bg-gray-800 p-6 rounded-lg overflow-x-auto border border-gray-700 shadow-inner scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent hover:scrollbar-thumb-gray-600">
                     {activeError.error}
                   </pre>
                 </div>
@@ -296,7 +310,7 @@ const MainEditor = ({ userId }) => {
               <SelectorMenu onPayloadChange={handleTestCasePayload} />
             </div>
 
-            <div className="mt-8 flex justify-center">
+            <div className="mt-8 mb-6 flex justify-center">
               <button
                 onClick={handleSendRequest}
                 className={`relative inline-block text-lg px-5 py-3 font-medium leading-tight text-white transition-colors duration-300 ease-out border-2 border-gray-900 rounded-lg overflow-hidden group disabled:opacity-50 ${isSending ? 'cursor-not-allowed' : ''}`}
@@ -350,28 +364,53 @@ const MainEditor = ({ userId }) => {
                             Copy
                           </button>
                         </div>
-                        <pre className="bg-gray-950 p-3 rounded text-sm text-gray-300 overflow-x-auto mt-2 border border-gray-800">
+                        <pre className="bg-gray-950 p-3 rounded text-sm text-gray-300 overflow-x-auto border border-gray-800 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent hover:scrollbar-thumb-gray-600">
                           {difference.test_case}
                         </pre>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <h4 className="text-sm font-medium text-gray-400">Solution From Sub-optimal Code</h4>
-                          <pre className="bg-gray-950 p-3 rounded text-sm text-gray-300 overflow-x-auto border border-gray-800">
+                          <div className="flex justify-between items-center mb-2">
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => copyToClipboard(difference.output_code1)}
+                                className="inline-flex items-center px-2 py-1 text-xs font-medium text-gray-400 bg-gray-800 rounded-md border border-gray-700 hover:bg-gray-700 hover:text-gray-200 hover:border-gray-600 transition-all duration-200"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 mr-1.5">
+                                  <path d="M7 3.5A1.5 1.5 0 018.5 2h3.879a1.5 1.5 0 011.06.44l3.122 3.12A1.5 1.5 0 0117 6.622V12.5a1.5 1.5 0 01-1.5 1.5h-1v-3.379a3 3 0 00-.879-2.121L10.5 5.379A3 3 0 008.379 4.5H7v-1z" />
+                                  <path d="M4.5 6A1.5 1.5 0 003 7.5v9A1.5 1.5 0 004.5 18h7a1.5 1.5 0 001.5-1.5v-5.879a1.5 1.5 0 00-.44-1.06L9.44 6.439A1.5 1.5 0 008.378 6H4.5z" />
+                                </svg>
+                                Copy
+                              </button>
+                            </div>
+                          </div>
+                          <pre className="bg-gray-950 p-3 rounded text-sm text-gray-300 overflow-x-auto border border-gray-800 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent hover:scrollbar-thumb-gray-600">
                             {difference.output_code1}
                           </pre>
                         </div>
                         <div className="space-y-2">
                           <h4 className="text-sm font-medium text-gray-400">Solution From Optimal Code</h4>
-                          <pre className="bg-gray-950 p-3 rounded text-sm text-gray-300 overflow-x-auto border border-gray-800">
+                          <div className="flex justify-between items-center mb-2">
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => copyToClipboard(difference.output_code2)}
+                                className="inline-flex items-center px-2 py-1 text-xs font-medium text-gray-400 bg-gray-800 rounded-md border border-gray-700 hover:bg-gray-700 hover:text-gray-200 hover:border-gray-600 transition-all duration-200"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 mr-1.5">
+                                  <path d="M7 3.5A1.5 1.5 0 018.5 2h3.879a1.5 1.5 0 011.06.44l3.122 3.12A1.5 1.5 0 0117 6.622V12.5a1.5 1.5 0 01-1.5 1.5h-1v-3.379a3 3 0 00-.879-2.121L10.5 5.379A3 3 0 008.379 4.5H7v-1z" />
+                                  <path d="M4.5 6A1.5 1.5 0 003 7.5v9A1.5 1.5 0 004.5 18h7a1.5 1.5 0 001.5-1.5v-5.879a1.5 1.5 0 00-.44-1.06L9.44 6.439A1.5 1.5 0 008.378 6H4.5z" />
+                                </svg>
+                                Copy
+                              </button>
+                            </div>
+                          </div>
+                          <pre className="bg-gray-950 p-3 rounded text-sm text-gray-300 overflow-x-auto border border-gray-800 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent hover:scrollbar-thumb-gray-600">
                             {difference.output_code2}
                           </pre>
                         </div>
                       </div>
-
                     </div>
-
-
                   ))
 
                   }

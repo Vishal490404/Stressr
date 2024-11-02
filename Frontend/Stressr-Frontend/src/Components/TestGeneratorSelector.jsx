@@ -259,15 +259,15 @@ export function SelectorMenu({ onPayloadChange }) {
                             <select
                                 value={selectedGenerator}
                                 onChange={handleGeneratorChange}
-                                className="border p-2 rounded-lg w-1/2 bg-gray-700 text-gray-300"
+                                className="border p-2 rounded-lg w-1/2 bg-gray-800 text-gray-300"
                             >
-                                <option value="0" className="bg-gray-700 text-gray-300">Select a generator</option>
-                                <option value="1" className="bg-gray-700 text-gray-300">Single Number Generator with testcases</option>
-                                <option value="2" className="bg-gray-700 text-gray-300">Single Number Generator</option>
-                                <option value="3" className="bg-gray-700 text-gray-300">Two Space Separated Integers Generator with testcases</option>
-                                <option value="4" className="bg-gray-700 text-gray-300">Two Space Separated Integers Generator</option>
-                                <option value="5" className="bg-gray-700 text-gray-300">Array Generator with testcases</option>
-                                <option value="6" className="bg-gray-700 text-gray-300">Array Generator</option>
+                                <option value="0" className="bg-gray-800 text-gray-300">Select a generator</option>
+                                <option value="1" className="bg-gray-800 text-gray-300">Single Number Generator with testcases</option>
+                                <option value="2" className="bg-gray-800 text-gray-300">Single Number Generator</option>
+                                <option value="3" className="bg-gray-800 text-gray-300">Two Space Separated Integers Generator with testcases</option>
+                                <option value="4" className="bg-gray-800 text-gray-300">Two Space Separated Integers Generator</option>
+                                <option value="5" className="bg-gray-800 text-gray-300">Array Generator with testcases</option>
+                                <option value="6" className="bg-gray-800 text-gray-300">Array Generator</option>
                             </select>
                         </div>
                         <InputParameters selectedGenerator={selectedGenerator} setInputParameters={setInputParameters} />
