@@ -108,7 +108,7 @@ async def handle_multiple_code_executions():
             for code, language,code_number in [(code1, language1,"code1"), (code2, language2,"code2")]:
                 file_to_execute = Request.File(content=code, filename=f"Main")
                 code_output = await client.execute(language, [file_to_execute], stdin=generated_test_cases)
-                # print(code_output)    
+                print(code_output)    
                 if code_output.get("run", {}).get("signal") != None or code_output.get("compile", {}).get("signal") != None:
                     response_data = await jsonify({'error': f'Execution failed for {code_number}','what': code_output.get("run", {}).get("message") if code_output.get("run", {}).get("signal") != None else code_output.get("compile", {}).get("message")}).get_data(as_text=True)
                     yield f"data: {response_data}\n\n"
@@ -169,7 +169,10 @@ async def handle_multiple_code_executions():
  
 @app.route('/find-using-file', methods=['POST'])
 async def handle_file_uplaod():
-
+    data = await request.get_json()
+    file = data.get("file") 
+    print(file)
+    return jsonify({"response" : "File uploaded successfully"})
     pass
 
 @app.route('/ai-generate', methods=['POST'])
