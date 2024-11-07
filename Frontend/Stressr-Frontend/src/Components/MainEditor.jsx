@@ -107,6 +107,9 @@ const MainEditor = ({ userId }) => {
       });
       console.log(response);
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
       if (!response.data) {
         throw new Error('Response data is empty');
