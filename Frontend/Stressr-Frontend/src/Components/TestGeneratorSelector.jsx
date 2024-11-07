@@ -68,7 +68,7 @@ export function SelectorMenu({ onPayloadChange }) {
         setAiGeneratedCode('');
 
         try {
-            const response = await axios.post(`${process.env.BACKEND_URL}/ai-generate`, { prompt: aiPrompt, model_id: modelId });
+            const response = await axios.post(`${process.env.VITE_BACKEND_URL}/ai-generate`, { prompt: aiPrompt, model_id: modelId });
             const { generator_id, generator_code } = response.data;
 
             setAiGeneratedCode(generator_code);

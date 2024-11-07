@@ -10,8 +10,10 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import PropTypes from 'prop-types';
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
+import axios from 'axios';
 
 const MainEditor = ({ userId }) => {
+  
   const [code1, setCode1] = useState(languageTemplates.python);
   const [code2, setCode2] = useState(languageTemplates.cpp);
   const [language1, setLanguage1] = useState('python');
@@ -100,12 +102,10 @@ const MainEditor = ({ userId }) => {
     };
 
     try {
-      const response = await fetch(`${process.env.BACKEND_URL}/find`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/find`, payload, {
+        headers: { 'Content-Type': 'application/json' }
       });
-
+      console.log(response);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -162,6 +162,7 @@ const MainEditor = ({ userId }) => {
         toast.success('Test generation completed!');
       }
     } catch (error) {
+      // console.log(error);
       toast.error('Failed to generate test cases');
       console.error('Error:', error);
     } finally {
