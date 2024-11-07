@@ -4,6 +4,7 @@ from Exceptions import InvalidLanguage
 import Http_Handler
 from Models import Output, Runtime
 import json
+import os
 
 class File:
     def __init__(self, content, filename="") -> None:
@@ -15,10 +16,10 @@ class File:
 
 class PistonClient:
     ENDPOINTS = ("runtimes", "execute", "packages")
-    BASE_URL = "https://emkc.org/api/v2/piston/"
+    BASE_URL = os.getenv("API_URL")
     
     def __init__(self, api_key: Optional[str] = None,base_url: Optional[str] = None):
-        self.base_url = base_url or 'https://emkc.org/api/v2/piston/'
+        self.base_url = base_url or self.BASE_URL
         self._http_session = Http_Handler.HTTP(self.base_url, api_key,)
         self._runtimes: Optional[list[Runtime]] = None
 
