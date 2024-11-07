@@ -255,4 +255,4 @@ async def handle_ai_generation():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(port=9563)
+    app.run(host='0.0.0.0', port=9563)
