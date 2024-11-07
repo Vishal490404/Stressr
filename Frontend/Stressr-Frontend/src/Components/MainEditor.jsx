@@ -106,8 +106,13 @@ const MainEditor = ({ userId }) => {
         headers: { 'Content-Type': 'application/json' }
       });
       console.log(response);
-      if (!response.ok) {
+
+      if (response.status !== 200) {
         throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      if (!response.data) {
+        throw new Error('Response data is empty');
       }
 
       const reader = response.body.getReader();
@@ -162,9 +167,8 @@ const MainEditor = ({ userId }) => {
         toast.success('Test generation completed!');
       }
     } catch (error) {
-      // console.log(error);
-      toast.error('Failed to generate test cases');
       console.error('Error:', error);
+      toast.error('Failed to generate test cases');
     } finally {
       setIsComing(false);
       setIsSending(false);
