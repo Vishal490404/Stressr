@@ -3,7 +3,7 @@
 # import json
 
 # async def test_handle_multiple_code_executions():
-#     url = 'http://localhost:9563/find'
+#     url = 'https://stressr.onrender.com/find'
 #     test_payload = {
 #         "test_generation_option": {
 #             "generator_id": 7,

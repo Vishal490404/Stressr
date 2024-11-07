@@ -100,7 +100,7 @@ const MainEditor = ({ userId }) => {
     };
 
     try {
-      const response = await fetch('http://localhost:9563/find', {
+      const response = await fetch(`${process.env.BACKEND_URL}/find`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

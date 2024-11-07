@@ -52,7 +52,7 @@ const History = () => {
       if (userId) {
         try {
           // console.log(userId)
-          const response = await axios.get(`http://localhost:9563/history?user_id=${userId}`);
+          const response = await axios.get(`${process.env.BACKEND_URL}/history?user_id=${userId}`);
           // console.log(response.data)
           setHistory(response.data || []);
           setLoading(false);
