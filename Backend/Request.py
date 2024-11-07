@@ -19,7 +19,7 @@ class PistonClient:
     BASE_URL = os.getenv("API_URL")
     
     def __init__(self, api_key: Optional[str] = None,base_url: Optional[str] = None):
-        self.base_url = base_url or self.BASE_URL
+        self.base_url = base_url or os.getenv("API_URL")
         self._http_session = Http_Handler.HTTP(self.base_url, api_key,)
         self._runtimes: Optional[list[Runtime]] = None
 
