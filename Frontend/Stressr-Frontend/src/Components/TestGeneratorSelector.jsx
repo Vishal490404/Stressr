@@ -253,22 +253,70 @@ export function SelectorMenu({ onPayloadChange }) {
             <div className={`editor-container ${activeTab === 'Trivial_gens' || activeTab === 'User_gens' || activeTab === 'Ai_gens' ? 'shadow-lg rounded-2xl col-span-4' : ''}`}>
 
                 {activeTab === 'Trivial_gens' && (
-                    <div id="Trivial_gens ">
-                        <h1 className="editor-title ">Choose a Test Case Generator</h1>
+                    <div id="Trivial_gens">
+                        <h1 className="editor-title">Choose a Test Case Generator</h1>
                         <div className="flex justify-center mt-2">
-                            <select
-                                value={selectedGenerator}
-                                onChange={handleGeneratorChange}
-                                className="border p-2 rounded-lg w-1/2 bg-gray-800 text-gray-300"
-                            >
-                                <option value="0" className="bg-gray-800 text-gray-300">Select a generator</option>
-                                <option value="1" className="bg-gray-800 text-gray-300">Single Number Generator with testcases</option>
-                                <option value="2" className="bg-gray-800 text-gray-300">Single Number Generator</option>
-                                <option value="3" className="bg-gray-800 text-gray-300">Two Space Separated Integers Generator with testcases</option>
-                                <option value="4" className="bg-gray-800 text-gray-300">Two Space Separated Integers Generator</option>
-                                <option value="5" className="bg-gray-800 text-gray-300">Array Generator with testcases</option>
-                                <option value="6" className="bg-gray-800 text-gray-300">Array Generator</option>
-                            </select>
+                            <div className="flex flex-row w-1/2">
+                                <select
+                                    value={selectedGenerator}
+                                    onChange={handleGeneratorChange}
+                                    className="border p-2 rounded-lg w-full bg-gray-800 text-gray-300"
+                                >
+                                    <option value="0" className="bg-gray-800 text-gray-300">Select a generator</option>
+                                    <option value="1" className="bg-gray-800 text-gray-300">Single Number Generator with testcases</option>
+                                    <option value="2" className="bg-gray-800 text-gray-300">Single Number Generator</option>
+                                    <option value="3" className="bg-gray-800 text-gray-300">Two Space Separated Integers Generator with testcases</option>
+                                    <option value="4" className="bg-gray-800 text-gray-300">Two Space Separated Integers Generator</option>
+                                    <option value="5" className="bg-gray-800 text-gray-300">Array Generator with testcases</option>
+                                    <option value="6" className="bg-gray-800 text-gray-300">Array Generator</option>
+                                </select>
+                                <div className="group relative inline-block ml-2">
+                                    <svg 
+                                        xmlns="http://www.w3.org/2000/svg" 
+                                        className="h-5 w-5 text-gray-300 cursor-help absolute right-[-30px] top-2" 
+                                        fill="none" 
+                                        viewBox="0 0 24 24" 
+                                        stroke="currentColor"
+                                    >
+                                        <path 
+                                            strokeLinecap="round" 
+                                            strokeLinejoin="round" 
+                                            strokeWidth={2} 
+                                            d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
+                                        />
+                                    </svg>
+                                    <div className="absolute bottom-full right-[-30px] mb-2 hidden group-hover:block w-80 bg-gray-900 text-white text-sm rounded-lg p-4 shadow-lg border border-gray-700">
+                                        <p className="font-semibold mb-3">Generator Types:</p>
+                                        <ul className="space-y-3">
+                                            <li>
+                                                <span className="font-medium text-blue-400">Single Number Generator with testcases:</span>
+                                                <br/>Generates T testcases, each containing a single integer N
+                                            </li>
+                                            <li>
+                                                <span className="font-medium text-blue-400">Single Number Generator:</span>
+                                                <br/>Generates a single integer N without testcases
+                                            </li>
+                                            <li>
+                                                <span className="font-medium text-blue-400">Two Space Separated Integers with testcases:</span>
+                                                <br/>Generates T testcases, each containing two integers N M
+                                            </li>
+                                            <li>
+                                                <span className="font-medium text-blue-400">Two Space Separated Integers:</span>
+                                                <br/>Generates two integers N M without testcases
+                                            </li>
+                                            <li>
+                                                <span className="font-medium text-blue-400">Array Generator with testcases:</span>
+                                                <br/>Generates T testcases, each containing an array of size N
+                                            </li>
+                                            <li>
+                                                <span className="font-medium text-blue-400">Array Generator:</span>
+                                                <br/>Generates a single array of size N without testcases
+                                            </li>
+                                        </ul>
+                                        <div className="absolute bottom-0 right-8 transform translate-y-1/2 rotate-45 w-2 h-2 bg-gray-900 border-r border-b border-gray-700"></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <InputParameters selectedGenerator={selectedGenerator} setInputParameters={setInputParameters} />
                     </div>
@@ -277,13 +325,42 @@ export function SelectorMenu({ onPayloadChange }) {
                 {activeTab === 'User_gens' && (
                     <div id="User_gens">
                         <h1 className="editor-title">Upload a File and Provide Input</h1>
-                        <div className="mb-4">
-                            <input
-                                type="file"
-                                onChange={handleFileUpload}
-                                className="border p-2 rounded-lg bg-gray-700 text-gray-300"
-                                accept=".py,.js,.java,.cpp,.cc,.c"
-                            />
+                        <div className="mb-4 relative">
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="file"
+                                    onChange={handleFileUpload}
+                                    className="border p-2 rounded-lg bg-gray-800 text-gray-300"
+                                    accept=".py,.js,.java,.cpp,.cc,.c"
+                                />
+                                <div className="group relative">
+                                    <svg 
+                                        xmlns="http://www.w3.org/2000/svg" 
+                                        className="h-5 w-5 text-gray-300 cursor-help" 
+                                        fill="none" 
+                                        viewBox="0 0 24 24" 
+                                        stroke="currentColor"
+                                    >
+                                        <path 
+                                            strokeLinecap="round" 
+                                            strokeLinejoin="round" 
+                                            strokeWidth={2} 
+                                            d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
+                                        />
+                                    </svg>
+                                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block w-64 bg-gray-900 text-white text-sm rounded-lg p-3 shadow-lg border border-gray-700">
+                                        <p className="font-semibold mb-2">Supported File Types:</p>
+                                        <ul className="list-disc list-inside">
+                                            <li>Python (.py)</li>
+                                            <li>JavaScript (.js)</li>
+                                            <li>Java (.java)</li>
+                                            <li>C++ (.cpp, .cc)</li>
+                                            <li>C (.c)</li>
+                                        </ul>
+                                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45 w-2 h-2 bg-gray-900 border-r border-b border-gray-700"></div>
+                                    </div>
+                                </div>
+                            </div>
                             {uploadedFile && (
                                 <p className="mt-4 text-gray-300">File uploaded: {uploadedFile.name}</p>
                             )}
@@ -296,7 +373,7 @@ export function SelectorMenu({ onPayloadChange }) {
                                 id="stdin"
                                 value={stdinInput}
                                 onChange={handleStdinChange}
-                                className="border p-2 rounded-lg w-full h-24 bg-gray-700 text-gray-300"
+                                className="border p-2 rounded-lg w-full h-24 bg-gray-800 text-gray-300"
                             />
                         </div>
                     </div>
