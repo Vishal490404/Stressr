@@ -179,32 +179,38 @@ const AboutPage = () => {
     {
       title: "Step 1: Log in or Sign up",
       description: "Create an account or log in to access all features of Stressr.",
-      image: "/path/to/login-screenshot.png"
+      image: "/public/login.png",
+      icon: "🔐"
     },
     {
-      title: "Step 2: Create a New Test",
-      description: "From your dashboard, click on 'New Test' to start a new stress testing session.",
-      image: "/path/to/new-test-screenshot.png"
+      title: "Step 2: Move to Dashboard",
+      description: "From your dashboard, you can create a new test, view your history, and access your profile settings.",
+      image: "/public/dash.png",
+      icon: "📊"
     },
     {
-      title: "Step 3: Enter Your Code",
-      description: "Paste your solution code and, if applicable, the brute force code into the provided editors.",
-      image: "/path/to/code-entry-screenshot.png"
+      title: "Step 3: Enter Your Sub-Optimal Code and Optimal Code",
+      description: "Paste your solution code and the brute force code into the provided editors.",
+      image: "/public/code.png",
+      icon: "💻"
     },
     {
       title: "Step 4: Set Test Parameters",
       description: "Configure the test settings, such as the number of test cases and input ranges.",
-      image: "/path/to/test-params-screenshot.png"
+      image: "/public/tests.png",
+      icon: "⚙️"
     },
     {
       title: "Step 5: Run the Test",
       description: "Click 'Run Test' to start the stress testing process and wait for the results.",
-      image: "/path/to/run-test-screenshot.png"
+      image: "/load.png",
+      icon: "🚀"
     },
     {
       title: "Step 6: Review Results",
       description: "Analyze the test results, including any differences found between your solution and the brute force method.",
-      image: "/path/to/results-screenshot.png"
+      image: "/res.png",
+      icon: "📈"
     }
   ];
 
@@ -227,16 +233,6 @@ const AboutPage = () => {
                 <li>
                   <Link to="/dashboard" className="hover:text-gray-300 transition-colors duration-200">
                     Dashboard
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/history" className="hover:text-gray-300 transition-colors duration-200">
-                    History
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/about" className="hover:text-gray-300 transition-colors duration-200">
-                    User Guide
                   </Link>
                 </li>
                 {isLoggedIn && profileImage && (
@@ -302,22 +298,42 @@ const AboutPage = () => {
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="user-guide-container max-w-4xl mx-auto px-4 py-8 bg-transparent rounded-lg"
+                className="user-guide-container max-w-7xl mx-auto px-4 py-16 bg-transparent rounded-lg"
               >
-                <h2 className="text-3xl font-bold text-white mb-8 text-center">User Guide</h2>
-                {userGuideSteps.map((step, index) => (
-                  <motion.div 
-                    key={index}
-                    initial={{ opacity: 0, x: -50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="mb-12 bg-gray-800 bg-opacity-50 rounded-lg p-6"
-                  >
-                    <h3 className="text-2xl font-semibold text-white mb-4">{step.title}</h3>
-                    <p className="text-gray-300 mb-4">{step.description}</p>
-                    <img src={step.image} alt={step.title} className="w-full rounded-lg shadow-md" />
-                  </motion.div>
-                ))}
+                <h2 className="text-4xl font-bold text-white mb-12 text-center">
+                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
+                    How to Use Stressr?
+                  </span>
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {userGuideSteps.map((step, index) => (
+                    <motion.div 
+                      key={index}
+                      initial={{ opacity: 0, x: -50 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      className="relative group hover:transform hover:scale-105 transition-all duration-300"
+                    >
+                      <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg blur opacity-25 group-hover:opacity-75 transition duration-200"></div>
+                      <div className="relative bg-gray-900 rounded-lg p-6 border border-gray-800 hover:border-gray-700 h-[600px] flex flex-col">
+                        <div className="flex items-center mb-4">
+                          <span className="text-4xl mr-4">{step.icon}</span>
+                          <h3 className="text-2xl font-semibold text-white bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
+                            {step.title}
+                          </h3>
+                        </div>
+                        <p className="text-gray-300 mb-6">{step.description}</p>
+                        <div className="overflow-hidden rounded-lg shadow-xl flex-grow flex items-center justify-center">
+                          <img 
+                            src={step.image} 
+                            alt={step.title} 
+                            className="w-auto max-w-full transform hover:scale-105 transition-transform duration-300" 
+                          />
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
               </motion.div>
             </Scrollbars>
           </>

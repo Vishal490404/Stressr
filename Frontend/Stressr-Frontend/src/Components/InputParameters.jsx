@@ -60,7 +60,7 @@ const InputParameters = ({ selectedGenerator, setInputParameters }) => {
                 type="text"
                 value={value}
                 onChange={(e) => validateInput(e.target.value, setValue, name)}
-                className={`border p-2 rounded-lg bg-gray-700 text-white ${errors[name] ? 'border-red-500' : ''}`}
+                className={`border p-2 rounded-lg bg-gray-800 text-white ${errors[name] ? 'border-red-500' : ''}`}
             />
             {errors[name] && <span className="absolute text-red-500 text-xs top-full left-0">{errors[name]}</span>}
         </div>

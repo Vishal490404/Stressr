@@ -335,7 +335,7 @@ const MainEditor = ({ userId }) => {
             <div className='p-7 '>
               <div className="mt-8 bg-gray-900 rounded-2xl p-6 shadow-xl border border-gray-800">
                 <h3 className="text-2xl font-semibold text-gray-100 mb-4">
-                  You're optimal solution was wrong on following test cases:
+                  Your optimal solution was wrong on following test cases:
                 </h3>
                 <div className="space-y-6">
                   {differences.map((difference, index) => (

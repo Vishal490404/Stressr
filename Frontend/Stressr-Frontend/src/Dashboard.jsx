@@ -106,16 +106,6 @@ const Dashboard = () => {
                         </h1>
                         <ul className="flex space-x-6 text-white items-center">
                             <li>
-                                <Link to="/dashboard" className="hover:text-gray-300 transition-colors duration-200">
-                                    Dashboard
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="/history" className="hover:text-gray-300 transition-colors duration-200">
-                                    History
-                                </Link>
-                            </li>
-                            <li>
                                 <Link to="/about" className="hover:text-gray-300 transition-colors duration-200">
                                     User Guide
                                 </Link>
