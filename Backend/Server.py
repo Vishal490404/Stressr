@@ -95,7 +95,7 @@ async def handle_multiple_code_executions():
 
     @stream_with_context
     async def generate_response():
-        for _ in range(1):
+        for _ in range(10):
             file_generator = Request.File(content=generator_code, filename="Main")
             generator_output = await client.execute(generator_lang, [file_generator], stdin=generator_params)
 
