@@ -105,65 +105,38 @@ const MainEditor = ({ userId }) => {
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/find`, payload, {
         headers: { 'Content-Type': 'application/json' }
       });
-      console.log(response);
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      if (!response.data) {
-        throw new Error('Response data is empty');
-      }
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-
-        const text = decoder.decode(value);
-        const lines = text.split('\n');
-        // console.log(lines);
-        try {
-          const parsedLine = JSON.parse(lines[0]);
-          if ("error" in parsedLine) {
-            setSuccess(false);
-            setError_code1(parsedLine.error);
-
-            setActiveError({ code: 1, error: parsedLine.error });
-            setIsErrorModalOpen(true);
-          }
-        } catch (e) {
-          console.error('Error parsing line:', e);
-        }
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            try {
-              const data = JSON.parse(line.slice(6));
-              // console.log(data);
-              if (data.difference) {
-                setDifferences(prev => [...data.difference]);
-                setIsSending(false);
-              } else if (data.error) {
-                setSuccess(false);
-                if (data.error === 'Execution failed for code1') {
-                  setError_code1(data.what);
-                  setActiveError({ code: 1, error: data.what });
-                } else {
-                  setError_code2(data.what);
-                  setActiveError({ code: 2, error: data.what });
-                }
-                setIsErrorModalOpen(true);
+      // Parse the SSE formatted string
+      const lines = response.data.split('\n');
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          try {
+            const data = JSON.parse(line.slice(6));
+            if (data.difference) {
+              setDifferences(data.difference);
+              setSuccess(true);
+            } else if (data.error) {
+              setSuccess(false);
+              if (data.error === 'Execution failed for code1') {
+                setError_code1(data.what);
+                setActiveError({ code: 1, error: data.what });
+              } else {
+                setError_code2(data.what);
+                setActiveError({ code: 2, error: data.what });
               }
-            } catch (e) {
-              console.error('Error parsing SSE data:', e);
+              setIsErrorModalOpen(true);
             }
+          } catch (e) {
+            console.error('Error parsing SSE data:', e);
           }
         }
       }
-      setIsComing(false);
-      if(!error_code1 && !error_code2 && success){
+
+      if (!error_code1 && !error_code2 && success) {
         toast.success('Test generation completed!');
       }
     } catch (error) {
